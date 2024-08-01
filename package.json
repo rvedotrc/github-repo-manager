@@ -1,0 +1,23 @@
+{
+  "author": "Rachel Evans <rachel@rachelevans.org>",
+  "description": "",
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "@typescript-eslint/eslint-plugin": "^7.12.0",
+    "@typescript-eslint/parser": "^7.12.0",
+    "eslint-plugin-simple-import-sort": "^10.0.0",
+    "@types/node": "^20.5.9",
+    "prettier": "^3.0.3",
+    "typescript": "^5.2.2"
+  },
+  "license": "MIT",
+  "main": "dist/index.js",
+  "name": "github-repo-manager",
+  "private": true,
+  "repository": "https://github.com/rvedotrc/github-repo-manager",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf node_modules */tsconfig.tsbuildinfo */dist */node_modules"
+  },
+  "version": "1.0.0"
+}

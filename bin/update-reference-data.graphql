@@ -1,0 +1,35 @@
+query ($endCursor: String) {
+  viewer {
+    repositories(first: 25, after: $endCursor) {
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+      nodes {
+        id
+        name
+        owner {
+          login
+        }
+        visibility
+        defaultBranchRef {
+          name
+        }
+        url
+
+        isArchived
+        isEmpty
+        isFork
+        isLocked
+        isMirror
+        isPrivate
+        isTemplate
+
+        createdAt
+        updatedAt
+        pushedAt
+        archivedAt
+      }
+    }
+  }
+}

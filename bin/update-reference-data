@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -eu
+set -o pipefail
+
+BASE_DIR="${0%/*}"/..
+
+mkdir -p "$BASE_DIR/var"
+
+gh api graphql --paginate -F query=@"$0.graphql" \
+  | jq --slurp -f "$0.jq" \
+  > "$BASE_DIR/var/repositories.json.tmp"
+mv "$BASE_DIR/var/repositories.json.tmp" "$BASE_DIR/var/repositories.json"

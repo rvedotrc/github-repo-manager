@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "declaration": true,
+    "incremental": true,
+    "module": "NodeNext",
+    "moduleResolution": "nodenext",
+    "strictNullChecks": true,
+    "target": "ES2021",
+    "outDir": "dist",
+    "rootDir": "src"
+  }
+}
