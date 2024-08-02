@@ -16,7 +16,7 @@
   "private": true,
   "repository": "https://github.com/rvedotrc/github-repo-manager",
   "scripts": {
-    "build": "tsc",
+    "build": "prettier --write src && tsc && eslint",
     "clean": "rm -rf node_modules */tsconfig.tsbuildinfo */dist */node_modules"
   },
   "version": "1.0.0"
