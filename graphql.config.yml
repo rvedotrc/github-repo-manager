@@ -1,2 +1,0 @@
-schema: vendor/github/schema.docs.graphql
-documents: "**/*.graphql"

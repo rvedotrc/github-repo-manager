@@ -6,8 +6,18 @@
     "module": "NodeNext",
     "moduleResolution": "nodenext",
     "strictNullChecks": true,
-    "target": "ES2021",
+    "target": "ESNext",
     "outDir": "dist",
-    "rootDir": "src"
-  }
+    "rootDir": ".",
+    "plugins": [
+      {
+        "name": "@0no-co/graphqlsp",
+        "schema": "./schema.graphql"
+      }
+    ]
+  },
+  "include": [
+    "generated/**/*.ts",
+    "src/**/*.ts",
+  ]
 }

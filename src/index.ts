@@ -1,223 +1,92 @@
 import * as fs from "fs";
-import { runAndCapture } from "./runAndCapture";
+import { runAndCapture } from "./runAndCapture.js";
+import {
+  freshenReferenceData,
+  loadReferenceData,
+  Repository,
+} from "./referenceData.js";
+import { setMetadata } from "./metadata.js";
+import { makePromiseLimiter } from "./promiseLimiter.js";
+import { GitHubGraphClient } from "./gitHubGraphClient";
 
-type Repository = {
-  readonly id: string;
-  readonly name: string;
-  readonly owner: {
-    readonly login: string;
-  };
-  readonly visibility: string; // actually an enum
-  readonly defaultBranchRef?: {
-    readonly name: string;
-  };
-  readonly url: string;
-
-  readonly isArchived: boolean;
-  readonly isEmpty: boolean;
-  readonly isFork: boolean;
-  readonly isLocked: boolean;
-  readonly isMirror: boolean;
-  readonly isPrivate: boolean;
-  readonly isTemplate: boolean;
-
-  readonly createdAt: string; // datetime
-  readonly updatedAt?: string; // datetime
-  readonly pushedAt?: string; // datetime
-  readonly archivedAt?: string; // datetime
-};
-
-type ReferenceData = {
-  readonly repositories: ReadonlyArray<Repository>;
-};
-
-const CONFIG_GITHUB_REPOSITORY_ID = "github.repo.id";
-const CONFIG_GITHUB_REPOSITORY_NAME = "github.repo.name";
-const CONFIG_GITHUB_REPOSITORY_OWNER_LOGIN = "github.repo.owner.login";
-const CONFIG_GITHUB_REPOSITORY_VISIBILITY = "github.repo.visibility";
-const CONFIG_GITHUB_REPOSITORY_DEFAULT_BRANCH_REF_NAME =
-  "github.repo.defaultbranchref.name";
-const CONFIG_GITHUB_REPOSITORY_URL = "github.repo.url";
-
-const CONFIG_GITHUB_REPOSITORY_IS_ARCHIVED = "github.repo.isarchived";
-const CONFIG_GITHUB_REPOSITORY_IS_EMPTY = "github.repo.isempty";
-const CONFIG_GITHUB_REPOSITORY_IS_FORK = "github.repo.isfork";
-const CONFIG_GITHUB_REPOSITORY_IS_LOCKED = "github.repo.islocked";
-const CONFIG_GITHUB_REPOSITORY_IS_MIRROR = "github.repo.ismirror";
-const CONFIG_GITHUB_REPOSITORY_IS_PRIVATE = "github.repo.isprivate";
-const CONFIG_GITHUB_REPOSITORY_IS_TEMPLATE = "github.repo.istemplate";
-
-const CONFIG_GITHUB_REPOSITORY_CREATED_AT = "github.repo.createdat";
-const CONFIG_GITHUB_REPOSITORY_UPDATED_AT = "github.repo.updatedat";
-const CONFIG_GITHUB_REPOSITORY_PUSHED_AT = "github.repo.pushedat";
-const CONFIG_GITHUB_REPOSITORY_ARCHIVED_AT = "github.repo.archivedat";
-
-const loadReferenceData = (dir: string): Promise<ReferenceData> =>
-  fs.promises
-    .readFile(`${dir}/var/repositories.json`, "utf-8")
-    .then((text) => JSON.parse(text));
+const remoteLimiter = makePromiseLimiter<void>(10, "git-remote");
 
 const doClone = async (repo: Repository, dir: string): Promise<void> => {
   const tmpTarget = `${dir}/temp:${repo.name}`;
   const finalTarget = `${dir}/${repo.name}`;
 
-  await runAndCapture("git", ["clone", repo.url, tmpTarget]);
+  await remoteLimiter.submit(async () => {
+    console.log(`git clone ${repo.url} ${finalTarget}`);
 
-  await fs.promises.rename(tmpTarget, finalTarget);
-};
+    await runAndCapture("git", ["clone", repo.url, tmpTarget]);
 
-const ensureConfig = async (
-  key: string,
-  value: string,
-  dir: string,
-  config: Readonly<Record<string, string>>,
-): Promise<void> => {
-  if (config[key] === value) return;
-
-  console.log(`${dir}: git config ${key} ${value}`);
-  await runAndCapture("git", ["config", key, value], { cwd: dir });
+    await fs.promises.rename(tmpTarget, finalTarget);
+  }, repo.url);
 };
 
 const ensureMetadataPresent = async (
   repo: Repository,
   dir: string,
 ): Promise<void> => {
-  const configText = (
-    await runAndCapture("git", ["config", "--list", "--local"], { cwd: dir })
-  ).stdout;
-
-  const pairs = [...configText.matchAll(/^(.*?)=(.*)\n/gm)].map((match) => ({
-    key: match[1],
-    value: match[2],
-  }));
-
-  const config = pairs.reduce(
-    (prev, curr) => ({
-      ...prev,
-      [curr.key]: curr.value,
-    }),
-    {},
-  );
-
-  console.dir(config);
-
-  await ensureConfig(CONFIG_GITHUB_REPOSITORY_ID, repo.id, dir, config);
-  await ensureConfig(CONFIG_GITHUB_REPOSITORY_NAME, repo.name, dir, config);
-  await ensureConfig(
-    CONFIG_GITHUB_REPOSITORY_OWNER_LOGIN,
-    repo.owner.login,
-    dir,
-    config,
-  );
-  await ensureConfig(
-    CONFIG_GITHUB_REPOSITORY_DEFAULT_BRANCH_REF_NAME,
-    repo.defaultBranchRef?.name ?? "",
-    dir,
-    config,
-  );
-  await ensureConfig(
-    CONFIG_GITHUB_REPOSITORY_VISIBILITY,
-    repo.visibility,
-    dir,
-    config,
-  );
-  await ensureConfig(CONFIG_GITHUB_REPOSITORY_URL, repo.url, dir, config);
-
-  await ensureConfig(
-    CONFIG_GITHUB_REPOSITORY_IS_ARCHIVED,
-    repo.isArchived ? "true" : "false",
-    dir,
-    config,
-  );
-  await ensureConfig(
-    CONFIG_GITHUB_REPOSITORY_IS_EMPTY,
-    repo.isEmpty ? "true" : "false",
-    dir,
-    config,
-  );
-  await ensureConfig(
-    CONFIG_GITHUB_REPOSITORY_IS_FORK,
-    repo.isFork ? "true" : "false",
-    dir,
-    config,
-  );
-  await ensureConfig(
-    CONFIG_GITHUB_REPOSITORY_IS_LOCKED,
-    repo.isLocked ? "true" : "false",
-    dir,
-    config,
-  );
-  await ensureConfig(
-    CONFIG_GITHUB_REPOSITORY_IS_MIRROR,
-    repo.isMirror ? "true" : "false",
-    dir,
-    config,
-  );
-  await ensureConfig(
-    CONFIG_GITHUB_REPOSITORY_IS_PRIVATE,
-    repo.isPrivate ? "true" : "false",
-    dir,
-    config,
-  );
-  await ensureConfig(
-    CONFIG_GITHUB_REPOSITORY_IS_TEMPLATE,
-    repo.isTemplate ? "true" : "false",
-    dir,
-    config,
-  );
-
-  await ensureConfig(
-    CONFIG_GITHUB_REPOSITORY_CREATED_AT,
-    repo.createdAt,
-    dir,
-    config,
-  );
-  await ensureConfig(
-    CONFIG_GITHUB_REPOSITORY_UPDATED_AT,
-    repo.updatedAt ?? "",
-    dir,
-    config,
-  );
-  await ensureConfig(
-    CONFIG_GITHUB_REPOSITORY_PUSHED_AT,
-    repo.pushedAt ?? "",
-    dir,
-    config,
-  );
-  await ensureConfig(
-    CONFIG_GITHUB_REPOSITORY_ARCHIVED_AT,
-    repo.archivedAt ?? "",
-    dir,
-    config,
-  );
+  await setMetadata(dir, repo);
 };
 
 const syncAllUnderOwnerToDir = async (
   owner: string,
   dir: string,
 ): Promise<void> => {
-  const entries = await fs.promises.readdir(dir);
-  console.dir(entries);
+  const entries = await fs.promises.readdir(dir).catch((err) => {
+    if (err.code !== "ENOENT") throw err;
 
-  const remotes = await loadReferenceData(".");
-  console.dir(remotes.repositories.map((r) => r.name));
+    return fs.promises
+      .mkdir(dir)
+      .catch((err2) => {
+        if (err2.code !== "EEXIST") throw err2;
+      })
+      .then(() => [] as string[]);
+  });
+
+  const remotes = await loadReferenceData(owner);
+
+  const toClone: Array<{ dir: string; repo: Repository }> = [];
+  const toSync: Array<{ dir: string; repo: Repository }> = [];
 
   for (const repo of remotes.repositories) {
     if (!entries.includes(repo.name)) {
-      await doClone(repo, dir);
+      toClone.push({ dir, repo });
     } else {
-      console.log(
-        `${dir}/${repo.name} already exists (hopefully it's a clone)`,
-      );
-      await ensureMetadataPresent(repo, `${dir}/${repo.name}`);
+      toSync.push({ repo, dir });
     }
   }
+
+  await Promise.all([
+    ...toClone.map((item) => doClone(item.repo, item.dir)),
+    ...toSync.map((item) =>
+      ensureMetadataPresent(item.repo, `${dir}/${item.repo.name}`),
+    ),
+  ]);
 };
 
-syncAllUnderOwnerToDir(
-  "rvedotrc",
-  `${process.env.HOME}/github-rvedotrc-all`,
-).catch((err) => {
+const main = async () => {
+  const args = process.argv.slice(2);
+
+  if (args[0] === "--refresh") {
+    args.shift();
+    console.log({ refresh: { args } });
+    const client = new GitHubGraphClient(process.env.GH_API_TOKEN ?? "");
+    await Promise.all(args.map((owner) => freshenReferenceData(owner, client)));
+  }
+
+  console.log({ process: { args } });
+
+  await Promise.all(
+    args.map((owner) =>
+      syncAllUnderOwnerToDir(owner, `${process.env.HOME}/github-${owner}-all`),
+    ),
+  );
+};
+
+main().catch((err) => {
   console.error(err);
   process.exit(1);
 });
