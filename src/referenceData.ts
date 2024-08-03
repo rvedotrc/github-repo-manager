@@ -2,6 +2,7 @@ import { graphql } from "../generated/graphql";
 import { GitHubGraphClient } from "./gitHubGraphClient";
 import { ListRepositoriesQuery } from "../generated/graphql/graphql";
 import * as fs from "fs";
+import { OwnerLogin } from "./index";
 
 const listRepositoriesQuery = graphql(`
   query listRepositories($owner: String!, $first: Int!, $endCursor: String) {
@@ -52,7 +53,7 @@ export type Repository = NonNullable<
 export type ReferenceData = { repositories: Array<Repository> };
 
 const fetchReferenceData = async (
-  owner: string,
+  owner: OwnerLogin,
   client: GitHubGraphClient,
   chunkSize = 20,
 ): Promise<Repository[]> => {
@@ -87,10 +88,10 @@ const fetchReferenceData = async (
   return repositories;
 };
 
-const referenceFile = (owner: string) => `var/repositories.${owner}.json`;
+const referenceFile = (owner: OwnerLogin) => `var/repositories.${owner}.json`;
 
 export const freshenReferenceData = async (
-  owner: string,
+  owner: OwnerLogin,
   client: GitHubGraphClient,
 ): Promise<ReferenceData> => {
   const referenceData = {
@@ -108,7 +109,7 @@ export const freshenReferenceData = async (
   return referenceData;
 };
 
-export const loadReferenceData = (owner: string): Promise<ReferenceData> =>
+export const loadReferenceData = (owner: OwnerLogin): Promise<ReferenceData> =>
   fs.promises
     .readFile(referenceFile(owner), "utf-8")
     .then((text) => JSON.parse(text));

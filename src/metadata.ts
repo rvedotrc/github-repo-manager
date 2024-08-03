@@ -1,12 +1,6 @@
 import { ensureConfig, readGitConfig } from "./gitConfig.js";
 import { Repository } from "./referenceData.js";
-
-// export type Repository = {
-//     id: string;
-//     name: string;
-//     ownerLogin: string;
-//     url: string;
-// }
+import { TopLevelDir } from "./index";
 
 const CONFIG_GITHUB_REPOSITORY_ID = "github.repo.id";
 const CONFIG_GITHUB_REPOSITORY_NAME = "github.repo.name";
@@ -30,113 +24,113 @@ const CONFIG_GITHUB_REPOSITORY_PUSHED_AT = "github.repo.pushedat";
 const CONFIG_GITHUB_REPOSITORY_ARCHIVED_AT = "github.repo.archivedat";
 
 export const setMetadata = async (
-  dir: string,
+  topLevelDir: TopLevelDir,
   repo: Repository,
 ): Promise<void> => {
-  const currentGitConfig = await readGitConfig(dir);
+  const currentGitConfig = await readGitConfig(topLevelDir);
 
   await ensureConfig(
     CONFIG_GITHUB_REPOSITORY_ID,
     repo.id,
-    dir,
+    topLevelDir,
     currentGitConfig,
   );
   await ensureConfig(
     CONFIG_GITHUB_REPOSITORY_NAME,
     repo.name,
-    dir,
+    topLevelDir,
     currentGitConfig,
   );
   await ensureConfig(
     CONFIG_GITHUB_REPOSITORY_OWNER_LOGIN,
     repo.owner.login,
-    dir,
+    topLevelDir,
     currentGitConfig,
   );
   await ensureConfig(
     CONFIG_GITHUB_REPOSITORY_DEFAULT_BRANCH_REF_NAME,
     repo.defaultBranchRef?.name ?? "",
-    dir,
+    topLevelDir,
     currentGitConfig,
   );
   await ensureConfig(
     CONFIG_GITHUB_REPOSITORY_VISIBILITY,
     repo.visibility,
-    dir,
+    topLevelDir,
     currentGitConfig,
   );
   await ensureConfig(
     CONFIG_GITHUB_REPOSITORY_URL,
     repo.url,
-    dir,
+    topLevelDir,
     currentGitConfig,
   );
 
   await ensureConfig(
     CONFIG_GITHUB_REPOSITORY_IS_ARCHIVED,
     repo.isArchived ? "true" : "false",
-    dir,
+    topLevelDir,
     currentGitConfig,
   );
   await ensureConfig(
     CONFIG_GITHUB_REPOSITORY_IS_EMPTY,
     repo.isEmpty ? "true" : "false",
-    dir,
+    topLevelDir,
     currentGitConfig,
   );
   await ensureConfig(
     CONFIG_GITHUB_REPOSITORY_IS_FORK,
     repo.isFork ? "true" : "false",
-    dir,
+    topLevelDir,
     currentGitConfig,
   );
   await ensureConfig(
     CONFIG_GITHUB_REPOSITORY_IS_LOCKED,
     repo.isLocked ? "true" : "false",
-    dir,
+    topLevelDir,
     currentGitConfig,
   );
   await ensureConfig(
     CONFIG_GITHUB_REPOSITORY_IS_MIRROR,
     repo.isMirror ? "true" : "false",
-    dir,
+    topLevelDir,
     currentGitConfig,
   );
   await ensureConfig(
     CONFIG_GITHUB_REPOSITORY_IS_PRIVATE,
     repo.isPrivate ? "true" : "false",
-    dir,
+    topLevelDir,
     currentGitConfig,
   );
   await ensureConfig(
     CONFIG_GITHUB_REPOSITORY_IS_TEMPLATE,
     repo.isTemplate ? "true" : "false",
-    dir,
+    topLevelDir,
     currentGitConfig,
   );
 
   await ensureConfig(
     CONFIG_GITHUB_REPOSITORY_CREATED_AT,
     repo.createdAt,
-    dir,
+    topLevelDir,
     currentGitConfig,
   );
   await ensureConfig(
     CONFIG_GITHUB_REPOSITORY_UPDATED_AT,
     repo.updatedAt ?? "",
-    dir,
+    topLevelDir,
     currentGitConfig,
   );
   await ensureConfig(
     CONFIG_GITHUB_REPOSITORY_PUSHED_AT,
     repo.pushedAt ?? "",
-    dir,
+    topLevelDir,
     currentGitConfig,
   );
   await ensureConfig(
     CONFIG_GITHUB_REPOSITORY_ARCHIVED_AT,
     repo.archivedAt ?? "",
-    dir,
+    topLevelDir,
     currentGitConfig,
   );
 };

@@ -1,15 +1,21 @@
 import { runAndCapture } from "./runAndCapture";
 import { makePromiseLimiter } from "./promiseLimiter";
+import { TopLevelDir } from "./index";
 
 export type GitConfig = Record<string, string>;
 
 const configLimiter = makePromiseLimiter<any>(10, "git-config");
 
-export const readGitConfig = async (dir: string): Promise<GitConfig> => {
+export const readGitConfig = async (
+  repoTopLevel: TopLevelDir,
+): Promise<GitConfig> => {
   const configText = (
     await configLimiter.submit(
-      () => runAndCapture("git", ["config", "--list", "--local"], { cwd: dir }),
-      `list-${dir}`,
+      () =>
+        runAndCapture("git", ["config", "--list", "--local"], {
+          cwd: repoTopLevel,
+        }),
+      `list-${repoTopLevel}`,
     )
   ).stdout;
 
@@ -30,17 +36,19 @@ export const readGitConfig = async (dir: string): Promise<GitConfig> => {
 export const ensureConfig = async (
   key: string,
   value: string | undefined,
-  dir: string,
+  repoTopLevel: TopLevelDir,
   config: Readonly<GitConfig>,
 ): Promise<void> => {
   if (config[key] === value) return;
 
   await configLimiter.submit(async () => {
     if (value === undefined) {
-      await runAndCapture("git", ["config", "--unset", key], { cwd: dir });
+      await runAndCapture("git", ["config", "--unset", key], {
+        cwd: repoTopLevel,
+      });
     } else {
-      console.log(`${dir}: git config ${key} ${value}`);
-      await runAndCapture("git", ["config", key, value], { cwd: dir });
+      console.log(`${repoTopLevel}: git config ${key} ${value}`);
+      await runAndCapture("git", ["config", key, value], { cwd: repoTopLevel });
     }
-  }, `set-${dir}-${key}`);
+  }, `set-${repoTopLevel}-${key}`);
 };
