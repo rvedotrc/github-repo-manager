@@ -3,16 +3,19 @@
   "description": "",
   "devDependencies": {
     "@0no-co/graphqlsp": "^1.12.12",
+    "@eslint/js": "^9.8.0",
     "@graphql-codegen/cli": "^5.0.2",
     "@graphql-codegen/schema-ast": "^4.1.0",
     "@parcel/watcher": "^2.4.1",
     "@types/node": "^20.5.9",
     "@typescript-eslint/eslint-plugin": "^7.12.0",
     "@typescript-eslint/parser": "^7.12.0",
-    "eslint": "^8.56.0",
+    "eslint": "9.x",
     "eslint-plugin-simple-import-sort": "^10.0.0",
+    "globals": "^15.9.0",
     "prettier": "^3.0.3",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "typescript-eslint": "^8.0.0"
   },
   "license": "MIT",
   "main": "dist/index.js",
@@ -22,7 +25,7 @@
   "scripts": {
     "codegen": "graphql-codegen --config codegen.ts",
     "codegen:watch": "rebuild src vendor codegen.ts -- yarn run codegen",
-    "build": "set -ve\nprettier --write src\ntsc\neslint src",
+    "build": "set -ve\nprettier --write src\ntsc\neslint",
     "build:watch": "rebuild --exclude=dist --exclude=node_modules . -- sh -c 'sleep 1 && yarn run build'",
     "clean": "rm -rf node_modules */tsconfig.tsbuildinfo */dist */node_modules"
   },
