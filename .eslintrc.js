@@ -1,4 +1,5 @@
-module.exports = {
+/** @type {import('eslint').Linter.Config} */
+const config = {
   root: true,
   parser: "@typescript-eslint/parser",
   parserOptions: {
@@ -32,3 +33,5 @@ module.exports = {
     "simple-import-sort/exports": "error",
   },
 };
+
+module.exports = config;

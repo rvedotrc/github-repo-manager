@@ -22,7 +22,7 @@
   "scripts": {
     "codegen": "graphql-codegen --config codegen.ts",
     "codegen:watch": "rebuild src vendor codegen.ts -- yarn run codegen",
-    "build": "set -ve\nprettier --write src\ntsc\neslint",
+    "build": "set -ve\nprettier --write src\ntsc\neslint src",
     "build:watch": "rebuild --exclude=dist --exclude=node_modules . -- sh -c 'sleep 1 && yarn run build'",
     "clean": "rm -rf node_modules */tsconfig.tsbuildinfo */dist */node_modules"
   },

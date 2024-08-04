@@ -1,16 +1,16 @@
 import * as fs from "fs";
-import { runAndCapture } from "./runAndCapture.js";
+
+import { GitHubGraphClient } from "./gitHubGraphClient";
+import { loadLocalRepositories } from "./locals";
+import { matchLocalsToRemotes } from "./matcher";
+import { setMetadata } from "./metadata.js";
+import { makePromiseLimiter } from "./promiseLimiter.js";
 import {
   freshenReferenceData,
   loadReferenceData,
   Repository,
 } from "./referenceData.js";
-import { getMetadata, Metadata, setMetadata } from "./metadata.js";
-import { makePromiseLimiter } from "./promiseLimiter.js";
-import { GitHubGraphClient } from "./gitHubGraphClient";
-import { GitConfig, readGitConfig } from "./gitConfig";
-import { loadLocalRepositories, LocalInfo } from "./locals";
-import { matchLocalsToRemotes } from "./matcher";
+import { runAndCapture } from "./runAndCapture.js";
 
 export type OwnerLogin = string & { readonly tag: unique symbol };
 export type OwnerDir = string & { readonly tag: unique symbol };

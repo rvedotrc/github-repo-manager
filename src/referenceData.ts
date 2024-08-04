@@ -1,7 +1,8 @@
-import { graphql } from "../generated/graphql";
-import { GitHubGraphClient } from "./gitHubGraphClient";
-import { ListRepositoriesQuery } from "../generated/graphql/graphql";
 import * as fs from "fs";
+
+import { graphql } from "../generated/graphql";
+import { ListRepositoriesQuery } from "../generated/graphql/graphql";
+import { GitHubGraphClient } from "./gitHubGraphClient";
 import { OwnerLogin } from "./index";
 
 const listRepositoriesQuery = graphql(`

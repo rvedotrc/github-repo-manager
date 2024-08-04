@@ -1,3 +1,5 @@
+type Logger = Pick<Console, "debug">;
+
 type Tag = string | (() => string);
 
 type Entry<T> = {
@@ -20,6 +22,7 @@ const tagToString = (tag: Tag) => (typeof tag === "string" ? tag : tag());
 export const makePromiseLimiter = <T>(
   size: number,
   name: string,
+  logger?: Logger,
 ): PromiseLimiter<T> => {
   let free = size;
   const queue: Entry<T>[] = [];
@@ -39,19 +42,19 @@ export const makePromiseLimiter = <T>(
       --free;
       const { id, makePromise, resolve, reject, tag } = entry;
       inFlight.add(entry);
-      // console.debug(
-      //   `${name} start job #${id}/${nextId} ${tagToString(
-      //     tag,
-      //   )} (in flight: ${describe()})`,
-      // );
+      logger?.debug(
+        `${name} start job #${id}/${nextId} ${tagToString(
+          tag,
+        )} (in flight: ${describe()})`,
+      );
       makePromise()
         .finally(() => {
           inFlight.delete(entry);
-          // console.debug(
-          //   `${name} end job #${id}/${nextId} ${tagToString(
-          //     tag,
-          //   )} (in flight: ${describe()})`,
-          // );
+          logger?.debug(
+            `${name} end job #${id}/${nextId} ${tagToString(
+              tag,
+            )} (in flight: ${describe()})`,
+          );
           ++free;
           tryStart();
         })
@@ -66,7 +69,7 @@ export const makePromiseLimiter = <T>(
     tag: Tag,
   ): Promise<T2> => {
     const id = nextId++;
-    // console.debug(`${name} submit job #${id} ${tagToString(tag)}`);
+    logger?.debug(`${name} submit job #${id} ${tagToString(tag)}`);
     return new Promise((resolve, reject) => {
       queue.push({ id, makePromise, resolve, reject, tag });
       tryStart();

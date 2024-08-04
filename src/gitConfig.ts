@@ -1,10 +1,10 @@
-import { runAndCapture } from "./runAndCapture";
-import { makePromiseLimiter } from "./promiseLimiter";
 import { TopLevelDir } from "./index";
+import { makePromiseLimiter } from "./promiseLimiter";
+import { runAndCapture } from "./runAndCapture";
 
 export type GitConfig = Record<string, string>;
 
-const configLimiter = makePromiseLimiter<any>(10, "git-config");
+const configLimiter = makePromiseLimiter(10, "git-config");
 
 export const readGitConfig = async (
   repoTopLevel: TopLevelDir,

@@ -1,6 +1,6 @@
 export type Resolvers<T> = {
   resolve: (value: T) => void;
-  reject: (reason?: any) => void;
+  reject: (reason?: unknown) => void;
 };
 
 export type DetachedPromise<T> = {
