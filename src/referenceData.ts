@@ -42,21 +42,25 @@ const listRepositoriesQuery = graphql(`
   }
 `);
 
-export type RepositoriesCollection = NonNullable<
-  NonNullable<ListRepositoriesQuery["repositoryOwner"]>["repositories"]
+export type RepositoriesCollection = Readonly<
+  NonNullable<
+    NonNullable<ListRepositoriesQuery["repositoryOwner"]>["repositories"]
+  >
 >;
 
-export type Repository = NonNullable<
-  NonNullable<RepositoriesCollection["nodes"]>[number]
+export type Repository = Readonly<
+  NonNullable<NonNullable<RepositoriesCollection["nodes"]>[number]>
 >;
 
-export type ReferenceData = { repositories: Array<Repository> };
+export type ReferenceData = {
+  readonly repositories: ReadonlyArray<Repository>;
+};
 
 const fetchReferenceData = async (
   owner: OwnerLogin,
   client: GitHubGraphClient,
   chunkSize = 20,
-): Promise<Repository[]> => {
+): Promise<ReadonlyArray<Repository>> => {
   const repositories: Repository[] = [];
   let endCursor = "";
 

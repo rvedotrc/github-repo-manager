@@ -1,4 +1,4 @@
-import { ensureConfig, readGitConfig } from "./gitConfig.js";
+import { ensureConfig, GitConfig, readGitConfig } from "./gitConfig.js";
 import { Repository } from "./referenceData.js";
 import { TopLevelDir } from "./index";
 
@@ -134,3 +134,60 @@ export const setMetadata = async (
     currentGitConfig,
   );
 };
+
+export type Metadata = Readonly<
+  Partial<
+    Pick<
+      Repository,
+      | "id"
+      | "name"
+      | "owner"
+      | "visibility"
+      | "defaultBranchRef"
+      | "url"
+      | "isArchived"
+      | "isEmpty"
+      | "isFork"
+      | "isLocked"
+      | "isMirror"
+      | "isPrivate"
+      | "isTemplate"
+      | "createdAt"
+      | "updatedAt"
+      | "pushedAt"
+      | "archivedAt"
+    >
+  >
+>;
+
+export const getMetadata = (gitConfig: GitConfig): Metadata => ({
+  id: gitConfig[CONFIG_GITHUB_REPOSITORY_ID],
+  name: gitConfig[CONFIG_GITHUB_REPOSITORY_NAME],
+
+  owner: gitConfig[CONFIG_GITHUB_REPOSITORY_OWNER_LOGIN]
+    ? {
+        login: gitConfig[CONFIG_GITHUB_REPOSITORY_OWNER_LOGIN],
+      }
+    : undefined,
+
+  defaultBranchRef: gitConfig[CONFIG_GITHUB_REPOSITORY_DEFAULT_BRANCH_REF_NAME]
+    ? {
+        name: gitConfig[CONFIG_GITHUB_REPOSITORY_DEFAULT_BRANCH_REF_NAME],
+      }
+    : undefined,
+
+  url: gitConfig[CONFIG_GITHUB_REPOSITORY_URL],
+
+  isArchived: gitConfig[CONFIG_GITHUB_REPOSITORY_IS_ARCHIVED] === "true",
+  isEmpty: gitConfig[CONFIG_GITHUB_REPOSITORY_IS_EMPTY] === "true",
+  isFork: gitConfig[CONFIG_GITHUB_REPOSITORY_IS_FORK] === "true",
+  isLocked: gitConfig[CONFIG_GITHUB_REPOSITORY_IS_LOCKED] === "true",
+  isMirror: gitConfig[CONFIG_GITHUB_REPOSITORY_IS_MIRROR] === "true",
+  isPrivate: gitConfig[CONFIG_GITHUB_REPOSITORY_IS_PRIVATE] === "true",
+  isTemplate: gitConfig[CONFIG_GITHUB_REPOSITORY_IS_TEMPLATE] === "true",
+
+  createdAt: gitConfig[CONFIG_GITHUB_REPOSITORY_CREATED_AT],
+  updatedAt: gitConfig[CONFIG_GITHUB_REPOSITORY_UPDATED_AT],
+  pushedAt: gitConfig[CONFIG_GITHUB_REPOSITORY_PUSHED_AT],
+  archivedAt: gitConfig[CONFIG_GITHUB_REPOSITORY_ARCHIVED_AT],
+});
