@@ -1,6 +1,22 @@
 {
-  "author": "Rachel Evans <rachel@rachelevans.org>",
+  "name": "github-repo-manager",
+  "version": "1.0.0",
+  "private": true,
   "description": "",
+  "repository": "https://github.com/rvedotrc/github-repo-manager",
+  "license": "MIT",
+  "author": "Rachel Evans <rachel@rachelevans.org>",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "set -ve ; prettier --write . ; tsc ; eslint",
+    "build:watch": "rebuild --exclude=dist --exclude=node_modules . -- sh -c 'sleep 1 && yarn run build'",
+    "clean": "rm -rf node_modules */tsconfig.tsbuildinfo */dist */node_modules",
+    "codegen": "graphql-codegen --config codegen.ts",
+    "codegen:watch": "rebuild src vendor codegen.ts -- yarn run codegen"
+  },
+  "dependencies": {
+    "graphql": "^16.9.0"
+  },
   "devDependencies": {
     "@0no-co/graphqlsp": "^1.12.12",
     "@eslint/js": "^9.8.0",
@@ -14,23 +30,8 @@
     "eslint-plugin-simple-import-sort": "^10.0.0",
     "globals": "^15.9.0",
     "prettier": "^3.0.3",
+    "prettier-plugin-packagejson": "^2.5.1",
     "typescript": "^5.2.2",
     "typescript-eslint": "^8.0.0"
-  },
-  "license": "MIT",
-  "main": "dist/index.js",
-  "name": "github-repo-manager",
-  "private": true,
-  "repository": "https://github.com/rvedotrc/github-repo-manager",
-  "scripts": {
-    "codegen": "graphql-codegen --config codegen.ts",
-    "codegen:watch": "rebuild src vendor codegen.ts -- yarn run codegen",
-    "build": "set -ve\nprettier --write src\ntsc\neslint",
-    "build:watch": "rebuild --exclude=dist --exclude=node_modules . -- sh -c 'sleep 1 && yarn run build'",
-    "clean": "rm -rf node_modules */tsconfig.tsbuildinfo */dist */node_modules"
-  },
-  "version": "1.0.0",
-  "dependencies": {
-    "graphql": "^16.9.0"
   }
 }
