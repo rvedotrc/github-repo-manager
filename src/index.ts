@@ -16,7 +16,7 @@ export type OwnerLogin = string & { readonly tag: unique symbol };
 export type OwnerDir = string & { readonly tag: unique symbol };
 export type TopLevelDir = string & { readonly tag: unique symbol };
 
-const remoteLimiter = makePromiseLimiter<void>(10, "git-remote");
+const remoteLimiter = makePromiseLimiter(10, "git-remote");
 
 const doClone = async (repo: Repository, ownerDir: OwnerDir): Promise<void> => {
   const tmpTarget = `${ownerDir}/temp:${repo.name}`;

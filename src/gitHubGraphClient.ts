@@ -8,18 +8,9 @@ export type QueryResult<T> = {
 export class GitHubGraphClient {
   constructor(private readonly token: string) {}
 
-  public execute<TResult, TVariables extends Record<string, never>>(
-    query: TypedDocumentString<TResult, TVariables>,
-  ): Promise<QueryResult<TResult>>;
-
-  public execute<TResult, TVariables extends Record<string, unknown>>(
-    query: TypedDocumentString<TResult, TVariables>,
-    variables: TVariables,
-  ): Promise<QueryResult<TResult>>;
-
   public async execute<TResult, TVariables>(
     query: TypedDocumentString<TResult, TVariables>,
-    variables?: unknown,
+    variables?: TVariables,
   ): Promise<QueryResult<TResult>> {
     // TODO: rate limiting and retrying
 
