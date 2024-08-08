@@ -100,7 +100,7 @@ const main = async () => {
     args.map((owner) =>
       syncAllUnderOwnerToDir(
         owner as OwnerLogin,
-        `${process.env.HOME}/github-${owner}-all` as OwnerDir,
+        `${process.env.HOME}/git/github.com/${owner}` as OwnerDir,
       ),
     ),
   );
