@@ -4,6 +4,7 @@ const config: CodegenConfig = {
   schema: "./vendor/github/schema.docs.graphql",
   documents: ["src/**/*.ts"],
   ignoreNoDocuments: true,
+  emitLegacyCommonJSImports: false,
   generates: {
     "./generated/graphql/": {
       preset: "client",

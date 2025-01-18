@@ -1,6 +1,6 @@
-import { OwnerDir } from "./index";
-import { LocalGitInfo, LocalInfo } from "./locals";
-import { Repository } from "./referenceData";
+import { OwnerDir } from "./index.js";
+import { LocalGitInfo, LocalInfo } from "./locals.js";
+import { Repository } from "./referenceData.js";
 
 export type LocalRemoteMatchData = NonNullable<{
   results: Readonly<{

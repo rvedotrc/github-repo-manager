@@ -1,4 +1,4 @@
-import type { TypedDocumentString } from "../generated/graphql/graphql";
+import type { TypedDocumentString } from "../generated/graphql/graphql.js";
 
 export type QueryResult<T> = {
   data?: T;

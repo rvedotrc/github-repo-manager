@@ -1,5 +1,5 @@
 import { ensureConfig, GitConfig, readGitConfig } from "./gitConfig.js";
-import { TopLevelDir } from "./index";
+import { TopLevelDir } from "./index.js";
 import { Repository } from "./referenceData.js";
 
 const CONFIG_GITHUB_REPOSITORY_ID = "github.repo.id";

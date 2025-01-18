@@ -1,8 +1,8 @@
 import * as fs from "fs";
 
-import { GitHubGraphClient } from "./gitHubGraphClient";
-import { loadLocalRepositories } from "./locals";
-import { matchLocalsToRemotes } from "./matcher";
+import { GitHubGraphClient } from "./gitHubGraphClient.js";
+import { loadLocalRepositories } from "./locals.js";
+import { matchLocalsToRemotes } from "./matcher.js";
 import { setMetadata } from "./metadata.js";
 import { makePromiseLimiter } from "./promiseLimiter.js";
 import {
@@ -10,12 +10,13 @@ import {
   loadReferenceData,
   Repository,
 } from "./referenceData.js";
+import { updateLocal } from "./updateLocal.js";
+import { logPromiseError } from "./logPromiseError.js";
 import { runAndCapture } from "./runAndCapture.js";
 
 export type OwnerLogin = string & { readonly tag: unique symbol };
 export type OwnerDir = string & { readonly tag: unique symbol };
 export type TopLevelDir = string & { readonly tag: unique symbol };
-
 const remoteLimiter = makePromiseLimiter(10, "git-remote");
 
 const doClone = async (repo: Repository, ownerDir: OwnerDir): Promise<void> => {

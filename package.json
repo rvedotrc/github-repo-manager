@@ -6,6 +6,7 @@
   "repository": "https://github.com/rvedotrc/github-repo-manager",
   "license": "MIT",
   "author": "Rachel Evans <rachel@rachelevans.org>",
+  "type": "module",
   "main": "dist/index.js",
   "scripts": {
     "build": "set -ve ; yarn run lint ; tsc",

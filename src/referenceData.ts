@@ -1,9 +1,9 @@
 import * as fs from "fs";
 
-import { graphql } from "../generated/graphql";
-import { ListRepositoriesQuery } from "../generated/graphql/graphql";
-import { GitHubGraphClient } from "./gitHubGraphClient";
-import { OwnerLogin } from "./index";
+import { graphql } from "../generated/graphql/gql.js";
+import { ListRepositoriesQuery } from "../generated/graphql/graphql.js";
+import { GitHubGraphClient } from "./gitHubGraphClient.js";
+import { OwnerLogin } from "./index.js";
 
 const listRepositoriesQuery = graphql(`
   query listRepositories($owner: String!, $first: Int!, $endCursor: String) {

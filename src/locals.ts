@@ -1,9 +1,9 @@
 import fs from "fs";
 
-import { GitConfig, readGitConfig } from "./gitConfig";
-import { OwnerDir, TopLevelDir } from "./index";
-import { getMetadata, Metadata } from "./metadata";
-import { runAndCapture } from "./runAndCapture";
+import { GitConfig, readGitConfig } from "./gitConfig.js";
+import { OwnerDir, TopLevelDir } from "./index.js";
+import { getMetadata, Metadata } from "./metadata.js";
+import { runAndCapture } from "./runAndCapture.js";
 
 export type LocalNonGitInfo = {
   readonly name: string;

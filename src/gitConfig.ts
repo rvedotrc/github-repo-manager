@@ -1,6 +1,6 @@
-import { TopLevelDir } from "./index";
-import { makePromiseLimiter } from "./promiseLimiter";
-import { runAndCapture } from "./runAndCapture";
+import { TopLevelDir } from "./index.js";
+import { makePromiseLimiter } from "./promiseLimiter.js";
+import { runAndCapture } from "./runAndCapture.js";
 
 export type GitConfig = Record<string, string>;
 
