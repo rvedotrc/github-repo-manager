@@ -47,7 +47,10 @@ export const loadLocalRepositories = async (
         const output = await runAndCapture(
           "git",
           ["rev-parse", "--show-toplevel"],
-          { cwd: childPath, requireSuccess: false },
+          {
+            cwd: childPath,
+            requireSuccess: false,
+          },
         );
 
         if (output.code === 0 && output.stdout === childPath + "\n") {
@@ -63,11 +66,11 @@ export const loadLocalRepositories = async (
             topLevel,
             config,
             metadata,
-          };
+          } as const;
         }
       }
 
-      return { name, childPath, stat, isGit: false };
+      return { name, childPath, stat, isGit: false } as const;
     }),
   );
 };

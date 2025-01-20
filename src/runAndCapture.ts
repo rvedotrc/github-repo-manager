@@ -24,6 +24,7 @@ export const runAndCapture = (
   opts: SpawnOptionsWithoutStdio & { requireSuccess?: boolean } = {},
 ): Promise<CommandResult> =>
   new Promise((resolve, reject) => {
+    const stack = new Error().stack;
     let stdout = Buffer.of();
     let stderr = Buffer.of();
 
@@ -49,7 +50,9 @@ export const runAndCapture = (
       };
 
       if (result.code !== 0 && (opts.requireSuccess ?? true)) {
-        reject(new CommandFailedException(result));
+        const e = new CommandFailedException(result);
+        e.stack = stack;
+        reject(e);
       }
 
       resolve(result);

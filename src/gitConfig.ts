@@ -48,7 +48,9 @@ export const ensureConfig = async (
       });
     } else {
       console.log(`${repoTopLevel}: git config ${key} ${value}`);
-      await runAndCapture("git", ["config", key, value], { cwd: repoTopLevel });
+      await runAndCapture("git", ["config", key, value], {
+        cwd: repoTopLevel,
+      });
     }
   }, `set-${repoTopLevel}-${key}`);
 };

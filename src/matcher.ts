@@ -115,6 +115,10 @@ export const matchLocalsToRemotes = (
     }
   }
 
+  // To manually match up a repo:
+  // git config github.repo.id $( gh repo view --json=id --jq .id )
+  // but how does that handle multi-remotes / forks?
+
   // unmatchedLocals could be a mix of:
   // - non-directories;
   // - non-git directories;
@@ -132,5 +136,5 @@ export const matchLocalsToRemotes = (
       nameMismatchWarnings,
       somethingInTheWayPreventingClone,
     },
-  };
+  } as const;
 };

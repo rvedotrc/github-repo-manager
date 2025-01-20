@@ -19,6 +19,7 @@
     "test": "echo 'Sorry :-('"
   },
   "dependencies": {
+    "@blaahaj/got-to-git": "../../blaahaj/got-to-git",
     "graphql": "^16.9.0"
   },
   "devDependencies": {

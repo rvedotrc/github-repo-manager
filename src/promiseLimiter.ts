@@ -3,15 +3,15 @@ type Logger = Pick<Console, "debug">;
 type Tag = string | (() => string);
 
 type Entry<T> = {
-  id: number;
-  makePromise: () => Promise<T>;
-  resolve: (value: T | PromiseLike<T>) => void;
-  reject: (reason?: any) => void; // eslint-disable-line @typescript-eslint/no-explicit-any
-  tag: Tag;
+  readonly id: number;
+  readonly makePromise: () => Promise<T>;
+  readonly resolve: (value: T | PromiseLike<T>) => void;
+  readonly reject: (reason?: any) => void; // eslint-disable-line @typescript-eslint/no-explicit-any
+  readonly tag: Tag;
 };
 
 export type PromiseLimiter<T> = {
-  submit: <T2 extends T>(
+  readonly submit: <T2 extends T>(
     makePromise: () => Promise<T2>,
     tag: Tag,
   ) => Promise<T2>;
@@ -78,5 +78,5 @@ export const makePromiseLimiter = <T>(
 
   return {
     submit,
-  };
+  } as const;
 };

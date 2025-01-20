@@ -3,3 +3,4 @@
 /generated/
 /var/
 tsconfig.tsbuildinfo
+/run

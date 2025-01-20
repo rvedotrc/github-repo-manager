@@ -1,113 +1,139 @@
 import * as fs from "fs";
 
-import { GitHubGraphClient } from "./gitHubGraphClient.js";
 import { loadLocalRepositories } from "./locals.js";
 import { matchLocalsToRemotes } from "./matcher.js";
 import { setMetadata } from "./metadata.js";
 import { makePromiseLimiter } from "./promiseLimiter.js";
+import { loadReferenceData, type Repository } from "./referenceData.js";
+// import { updateLocal } from "./updateLocal.js";
 import {
-  freshenReferenceData,
-  loadReferenceData,
-  Repository,
-} from "./referenceData.js";
-import { updateLocal } from "./updateLocal.js";
-import { logPromiseError } from "./logPromiseError.js";
+  failed,
+  NONE,
+  succeeded,
+  type SFWithContext,
+} from "./logPromiseError.js";
 import { runAndCapture } from "./runAndCapture.js";
+import { rm } from "fs/promises";
+import { updateLocal, type UpdateLocalResult } from "./updateLocal.js";
+import type { GitConfig } from "./gitConfig.js";
 
 export type OwnerLogin = string & { readonly tag: unique symbol };
 export type OwnerDir = string & { readonly tag: unique symbol };
 export type TopLevelDir = string & { readonly tag: unique symbol };
 const remoteLimiter = makePromiseLimiter(10, "git-remote");
 
-const doClone = async (repo: Repository, ownerDir: OwnerDir): Promise<void> => {
+const doClone = async (repo: Repository, ownerDir: OwnerDir) => {
   const tmpTarget = `${ownerDir}/temp:${repo.name}`;
   const finalTarget = `${ownerDir}/${repo.name}`;
 
-  await remoteLimiter.submit(async () => {
-    console.log(`git clone ${repo.url} ${finalTarget}`);
-
-    await runAndCapture("git", ["clone", repo.url, tmpTarget]);
+  try {
+    await remoteLimiter.submit(
+      () => runAndCapture("git", ["clone", repo.url, tmpTarget]),
+      repo.url,
+    );
 
     await fs.promises.rename(tmpTarget, finalTarget);
-  }, repo.url);
 
-  await setMetadata(finalTarget as TopLevelDir, repo);
+    await setMetadata(finalTarget as TopLevelDir, repo);
+
+    return {
+      repo,
+      ownerDir,
+      status: succeeded(NONE),
+    } as const;
+  } catch (err: unknown) {
+    return {
+      repo,
+      ownerDir,
+      status: failed(err),
+    } as const;
+  } finally {
+    void rm(tmpTarget, { recursive: true, force: true });
+  }
 };
 
-const doSync = async (
+export type DoSyncResult = SFWithContext<
+  { repo: Repository; repoTopLevel: TopLevelDir },
+  UpdateLocalResult,
+  unknown
+>;
+
+const doSync = (
   repo: Repository,
   repoTopLevel: TopLevelDir,
-): Promise<void> => {
-  await setMetadata(repoTopLevel, repo);
-};
+  localConfig: GitConfig,
+): Promise<DoSyncResult> =>
+  setMetadata(repoTopLevel, repo).then(
+    (mdValue) =>
+      updateLocal(repoTopLevel, repo, remoteLimiter, localConfig).then(
+        (ulValue) => ({
+          inputs: { repo, repoTopLevel },
+          debug: { mdValue },
+          result: succeeded(ulValue),
+        }),
+        (ulReason: unknown) => ({
+          inputs: { repo, repoTopLevel },
+          debug: { mdValue },
+          result: failed(ulReason),
+        }),
+      ),
+    (mdReason: unknown) => ({
+      inputs: { repo, repoTopLevel },
+      debug: undefined,
+      result: failed(mdReason),
+    }),
+  );
 
-const syncAllUnderOwnerToDir = async (
+export const syncAllUnderOwnerToDir = async (
   owner: OwnerLogin,
   ownerDir: OwnerDir,
-): Promise<void> => {
+) => {
   const locals = await loadLocalRepositories(ownerDir);
-  const remotes = (await loadReferenceData(owner)).repositories;
+  const remotes = (await loadReferenceData(owner)).repositories.filter(
+    (r) => r.owner.login === owner,
+  );
 
   const matchData = matchLocalsToRemotes(ownerDir, locals, remotes);
 
-  await Promise.all([
-    ...matchData.results.toClone.map((item) => doClone(item, ownerDir)),
-    ...matchData.results.pairedLocalsAndRemotes.map((item) =>
-      doSync(item.remote, item.local.topLevel),
-    ),
-  ]);
+  const r0 = {
+    owner,
+    ownerDir,
+    locals,
+    remotes,
+    matchData,
+  };
 
-  for (const warning of matchData.warnings.ambiguousLocalWarnings) {
-    console.warn(warning.message);
-  }
+  const clones = Promise.all(
+    matchData.results.toClone.map((item) => doClone(item, ownerDir)),
+  );
 
-  for (const warning of matchData.warnings.nameMismatchWarnings) {
-    console.warn(warning.message);
-  }
-
-  for (const warning of matchData.warnings.somethingInTheWayPreventingClone) {
-    console.warn(warning.message);
-  }
-
-  for (const local of matchData.results.unmatchedLocals) {
-    if (!local.isGit) {
-      console.warn(
-        `Unexpected item found; consider removing: rm -rf ${local.childPath}`,
-      );
-    } else if (local.metadata.url) {
-      console.warn(
-        `Found git repository '${local.childPath}', marked as a clone of ${local.metadata.url}, but that remote doesn't exist. Perhaps it got deleted? Consider removing: rm -rf ${local.childPath}`,
-      );
-    } else {
-      console.warn(
-        `Found git repository '${local.childPath}', but with no matching remote. Maybe it's still waiting for its first push?`,
-      );
-    }
-  }
-};
-
-const main = async () => {
-  const args = process.argv.slice(2);
-
-  if (args[0] === "--refresh") {
-    args.shift();
-    const client = new GitHubGraphClient(process.env.GH_API_TOKEN ?? "");
-    await Promise.all(
-      args.map((owner) => freshenReferenceData(owner as OwnerLogin, client)),
-    );
-  }
-
-  await Promise.all(
-    args.map((owner) =>
-      syncAllUnderOwnerToDir(
-        owner as OwnerLogin,
-        `${process.env.HOME}/git/github.com/${owner}` as OwnerDir,
-      ),
+  const syncs = Promise.all(
+    matchData.results.pairedLocalsAndRemotes.map((item) =>
+      doSync(item.remote, item.local.topLevel, item.local.config),
     ),
   );
-};
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+  const r1 = {
+    ...r0,
+    clones: await clones,
+    syncs: await syncs,
+  };
+
+  // for (const local of matchData.results.unmatchedLocals) {
+  //   if (!local.isGit) {
+  //     console.warn(
+  //       `Unexpected item found; consider removing: rm -rf ${local.childPath}`,
+  //     );
+  //   } else if (local.metadata.url) {
+  //     console.warn(
+  //       `Found git repository '${local.childPath}', marked as a clone of ${local.metadata.url}, but that remote doesn't exist. Perhaps it got deleted? Consider removing: rm -rf ${local.childPath}`,
+  //     );
+  //   } else {
+  //     console.warn(
+  //       `Found git repository '${local.childPath}', but with no matching remote. Maybe it's still waiting for its first push?`,
+  //     );
+  //   }
+  // }
+
+  return r1;
+};
