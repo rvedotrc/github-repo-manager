@@ -17,5 +17,5 @@
       }
     ]
   },
-  "include": ["generated/**/*.ts", "src/**/*.ts"]
+  "include": ["generated/**/*.ts", "src/**/*.ts", "spec/lazyTask.ts"]
 }

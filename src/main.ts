@@ -86,14 +86,36 @@ const main = async () => {
       if (result.tag === "failed") {
         console.log(
           `ERROR: Sync ${sync.inputs.repo.owner.login}/${sync.inputs.repo.name} => ${sync.inputs.repoTopLevel}/ :`,
-          result.reason,
+          JSON.stringify(result.reason),
         );
         continue;
       }
 
+      const props = result.value;
+      const pick = (output: [string, string, string], input: boolean | null) =>
+        input === null ? output[1] : input ? output[0] : output[2];
+
+      const flags = [
+        pick(["f", "?", " "], props.fetched?.fetched ?? null),
+        pick([" ", "?", "B"], props.onDefaultBranch),
+        pick([" ", "?", "🚧"], props.nothingInProgress),
+        pick(
+          [
+            " ",
+            "?",
+            pick(["u", "?", "M"], props.gitStatusExcludingUntrackedIsClean),
+          ],
+          props.gitStatusIsClean,
+        ),
+        pick([" ", "?", "🆕"], props.noUnpushedCommits),
+        pick(["⏩", "?", " "], props.fastForwardMerged),
+      ];
+
       console.log(
-        `${sync.inputs.repo.owner.login}/${sync.inputs.repo.name}\t${result.value.code}`,
+        `${flags.join(" ")}\t${sync.inputs.repo.owner.login}/${sync.inputs.repo.name}`,
       );
+
+      // console.dir(updateLocalResult, { depth: 5 });
     }
   }
 

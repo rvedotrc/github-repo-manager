@@ -106,7 +106,9 @@ export const matchLocalsToRemotes = (
 
     if (thingsInTheWay.length > 0) {
       somethingInTheWayPreventingClone.push({
-        message: `Want to clone ${remote.url}, but can't, because ${thingsInTheWay[0].childPath} is in the way`,
+        message:
+          `Want to clone ${remote.url}, but can't, because ${thingsInTheWay[0].childPath} is in the way` +
+          `\nMaybe run: git --git-dir ${thingsInTheWay[0].childPath}/.git config github.repo.id ${remote.id}`,
         locals: thingsInTheWay,
         remote,
       });

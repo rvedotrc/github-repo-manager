@@ -15,11 +15,12 @@
     "codegen": "graphql-codegen --config codegen.ts",
     "codegen:watch": "rebuild src vendor codegen.ts -- yarn run codegen",
     "lint": "set -ve ; yarn run lint:packagejson ; prettier --write . ; eslint",
-    "lint:packagejson": "npx npm-package-json-lint -c npmpackagejsonlint.config.json .",
+    "lint:packagejson": ": npx npm-package-json-lint -c npmpackagejsonlint.config.json .",
     "test": "echo 'Sorry :-('"
   },
   "dependencies": {
     "@blaahaj/got-to-git": "../../blaahaj/got-to-git",
+    "@blaahaj/lazy-task": "^1.0.0",
     "graphql": "^16.9.0"
   },
   "devDependencies": {
