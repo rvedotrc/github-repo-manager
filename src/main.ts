@@ -96,23 +96,26 @@ const main = async () => {
         input === null ? output[1] : input ? output[0] : output[2];
 
       const flags = [
-        pick(["f", "?", " "], props.fetched?.fetched ?? null),
-        pick([" ", "?", "B"], props.onDefaultBranch),
-        pick([" ", "?", "🚧"], props.nothingInProgress),
+        pick(["f", "~", " "], props.fetched?.fetched ?? null),
+        pick([" ", "~", "B"], props.onDefaultBranch),
+        pick([" ", "~", "P"], props.nothingInProgress),
         pick(
           [
             " ",
-            "?",
-            pick(["u", "?", "M"], props.gitStatusExcludingUntrackedIsClean),
+            "~",
+            pick(["?", "~", "M"], props.gitStatusExcludingUntrackedIsClean),
           ],
           props.gitStatusIsClean,
         ),
-        pick([" ", "?", "🆕"], props.noUnpushedCommits),
-        pick(["⏩", "?", " "], props.fastForwardMerged),
+        pick(["u", "~", " "], props.fastForwardMerged),
       ];
 
       console.log(
-        `${flags.join(" ")}\t${sync.inputs.repo.owner.login}/${sync.inputs.repo.name}`,
+        [
+          flags.join(" "),
+          (props.defaultBranchState ?? "~").padEnd(14),
+          `${sync.inputs.repo.owner.login}/${sync.inputs.repo.name}`,
+        ].join("\t"),
       );
 
       // console.dir(updateLocalResult, { depth: 5 });

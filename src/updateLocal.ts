@@ -20,7 +20,13 @@ export type UpdateLocalSuccessResult = {
   gitStatusIsClean: boolean | null;
   gitStatusExcludingUntrackedIsClean: boolean | null;
   nothingInProgress: boolean | null;
-  noUnpushedCommits: boolean | null;
+  defaultBranchState:
+    | "synced"
+    | "local-ahead"
+    | "remote-ahead"
+    | "diverged"
+    | "unrelated"
+    | null;
   fastForwardMerged: boolean | null;
 };
 
@@ -42,8 +48,8 @@ export const updateLocal = async (
     gitStatusIsClean: null,
     gitStatusExcludingUntrackedIsClean: null,
     nothingInProgress: null,
-    noUnpushedCommits: null,
-    fastForwardMerged: null,
+    defaultBranchState: null,
+    fastForwardMerged: false,
   };
 
   const inputs = {
@@ -102,35 +108,53 @@ export const updateLocal = async (
     (st) => st.working === "?" && st.index === "?",
   );
 
-  if (!onDefaultBranch || !nothingInProgress || !gitStatusIsClean) {
-    return { inputs, debug, result: succeeded(result) };
-  }
-
   const localAndRemoteHeads = await localAndRemoteHeadsTask.evaluate();
   if (didFail(localAndRemoteHeads))
     return { inputs, debug, result: localAndRemoteHeads };
 
   const { localHash, remoteHash } = localAndRemoteHeads.value;
 
-  if (localHash && remoteHash && localHash === remoteHash) {
-    result.noUnpushedCommits = true;
-    result.fastForwardMerged = false;
+  if (!localHash || !remoteHash) {
+    // Awaiting first push; awaiting first pull (weird); empty on both sides.
     return { inputs, debug, result: succeeded(result) };
   }
 
-  if (localHash && remoteHash) {
-    // Can fail
-    const unpushedCommits = await runAndCapture(
-      "git",
-      ["rev-list", remoteHash, localHash],
-      { cwd: repoTopLevel, requireSuccess: true },
-    );
+  if (localHash === remoteHash) {
+    result.defaultBranchState = "synced";
+    return { inputs, debug, result: succeeded(result) };
+  }
 
-    debug.unpushedCommits = unpushedCommits.stdout;
-    result.noUnpushedCommits = unpushedCommits.stdout === "";
+  // local-ahead or remote-ahead or diverged or unrelated
+  const localAhead = await runAndCapture(
+    "git",
+    ["merge-base", "--is-ancestor", localHash, remoteHash],
+    { cwd: repoTopLevel, requireSuccess: false },
+  ).then((r) => {
+    if (r.code === 0) return true;
+    if (r.code === 1) return false;
+    // FIXME
+    throw new Error("git merge-base is-ancestor failed");
+  });
+  if (localAhead) {
+    result.defaultBranchState = "local-ahead";
+    return { inputs, debug, result: succeeded(result) };
+  }
 
-    if (unpushedCommits.stdout !== "")
+  const remoteAhead = await runAndCapture(
+    "git",
+    ["merge-base", "--is-ancestor", remoteHash, localHash],
+    { cwd: repoTopLevel, requireSuccess: false },
+  ).then((r) => {
+    if (r.code === 0) return true;
+    if (r.code === 1) return false;
+    // FIXME
+    throw new Error("git merge-base is-ancestor failed");
+  });
+  if (remoteAhead) {
+    if (!onDefaultBranch || !nothingInProgress || !gitStatusIsClean) {
+      result.defaultBranchState = "remote-ahead";
       return { inputs, debug, result: succeeded(result) };
+    }
 
     const fastForwardMergeStatus = await runAndCapture(
       "git",
@@ -147,7 +171,21 @@ export const updateLocal = async (
     }
 
     result.fastForwardMerged = true;
+    result.defaultBranchState = "synced";
+    return { inputs, debug, result: succeeded(result) };
   }
+
+  // Diverged, unrelated
+  const mergeBaseStatus = await runAndCapture(
+    "git",
+    ["merge-base", localHash, remoteHash],
+    { cwd: repoTopLevel, requireSuccess: false },
+  );
+  if (mergeBaseStatus.signal || (mergeBaseStatus.code ?? 0) > 1)
+    return { inputs, debug, result: failed(mergeBaseStatus) };
+
+  result.defaultBranchState =
+    mergeBaseStatus.code === 0 ? "diverged" : "unrelated";
 
   return { inputs, debug, result: succeeded(result) };
 };

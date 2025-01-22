@@ -486,10 +486,10 @@
   dependencies:
     "@blaahaj/run-and-capture" "^0.0.3"
 
-"@blaahaj/lazy-task@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@blaahaj/lazy-task/-/lazy-task-1.0.0.tgz#1a573cc2455000ffceede0836328b4957d143bfa"
-  integrity sha512-HVaIs2RS9yDDd/mFAsBekliN0P/A20+DL62xq5KY2U0PkWqmfuFODvzq+tgU0LAtqJibDPGW1v+iHmJBfdCtTw==
+"@blaahaj/lazy-task@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@blaahaj/lazy-task/-/lazy-task-1.0.1.tgz#2e9388ba4ab3d622f219435f88c81d2cd99bcda1"
+  integrity sha512-A3oSXxeeGi/y2/c/5qNISYexM3Yq6pmIN80gYYPEIgm0pioBhixD20umF9mVOJwVQ3wPjAGgqM6NvUfSXQ1qmg==
 
 "@blaahaj/run-and-capture@^0.0.3":
   version "0.0.3"

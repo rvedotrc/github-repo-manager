@@ -14,7 +14,17 @@ export const localAndRemoteHeads = (
     > => {
       const r = await runAndCapture(
         "git",
-        ["rev-parse", "HEAD", `refs/remotes/${remoteName}/${defaultBranchRef}`],
+        [
+          "rev-parse",
+          // FIXME: no such thing as the "default branch" locally.
+          // We should be finding which local branch it is which has the
+          // remote's default as an upstream.
+
+          // FIXME: doesn't handle the no-commits case.
+          // Should switch to for-each-ref instead.
+          `refs/heads/${defaultBranchRef}`,
+          `refs/remotes/${remoteName}/${defaultBranchRef}`,
+        ],
         { cwd: repoTopLevel, requireSuccess: false },
       );
 

@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@blaahaj/got-to-git": "../../blaahaj/got-to-git",
-    "@blaahaj/lazy-task": "^1.0.0",
+    "@blaahaj/lazy-task": "^1.0.1",
     "graphql": "^16.9.0"
   },
   "devDependencies": {
