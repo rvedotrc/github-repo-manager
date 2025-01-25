@@ -104,9 +104,9 @@ export const updateLocal = async (
 
   const gitStatusIsClean = gitStatusPorcelain.length === 0;
   result.gitStatusIsClean = gitStatusIsClean;
-  result.gitStatusExcludingUntrackedIsClean = !gitStatusPorcelain.some(
-    (st) => st.working === "?" && st.index === "?",
-  );
+  result.gitStatusExcludingUntrackedIsClean =
+    gitStatusPorcelain.filter((st) => st.working !== "?" || st.index !== "?")
+      .length === 0;
 
   const localAndRemoteHeads = await localAndRemoteHeadsTask.evaluate();
   if (didFail(localAndRemoteHeads))
@@ -127,7 +127,7 @@ export const updateLocal = async (
   // local-ahead or remote-ahead or diverged or unrelated
   const localAhead = await runAndCapture(
     "git",
-    ["merge-base", "--is-ancestor", localHash, remoteHash],
+    ["merge-base", "--is-ancestor", remoteHash, localHash],
     { cwd: repoTopLevel, requireSuccess: false },
   ).then((r) => {
     if (r.code === 0) return true;
@@ -142,7 +142,7 @@ export const updateLocal = async (
 
   const remoteAhead = await runAndCapture(
     "git",
-    ["merge-base", "--is-ancestor", remoteHash, localHash],
+    ["merge-base", "--is-ancestor", localHash, remoteHash],
     { cwd: repoTopLevel, requireSuccess: false },
   ).then((r) => {
     if (r.code === 0) return true;
