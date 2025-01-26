@@ -1,12 +1,17 @@
 import { LazyTask } from "@blaahaj/lazy-task";
 import type { TopLevelDir } from "../index.js";
 import { runAndCapture } from "../runAndCapture.js";
+import { failed, succeeded } from "../logPromiseError.js";
 
-export const showRefs = (repoTopLevel: TopLevelDir) =>
+export const listRefs = (repoTopLevel: TopLevelDir) =>
   LazyTask.fromTask(async () => {
     const r = await runAndCapture("git", ["for-each-ref"], {
       cwd: repoTopLevel,
+      requireSuccess: false,
     });
+
+    if (r.code || r.signal) return failed(r);
+
     const lines = r.stdout.trimEnd().split("\n");
 
     const out = new Map<string, { objectId; objectType }>();
@@ -17,5 +22,5 @@ export const showRefs = (repoTopLevel: TopLevelDir) =>
       out.set(ref, { objectId, objectType });
     }
 
-    return out;
+    return succeeded(out);
   });

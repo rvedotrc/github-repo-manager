@@ -21,6 +21,9 @@ export type UpdateLocalSuccessResult = {
   gitStatusExcludingUntrackedIsClean: boolean | null;
   nothingInProgress: boolean | null;
   defaultBranchState:
+    | "both-empty"
+    | "awaiting-first-push"
+    | "awaiting-first-pull"
     | "synced"
     | "local-ahead"
     | "remote-ahead"
@@ -81,11 +84,7 @@ export const updateLocal = async (
   const defaultBranchRef = repo.defaultBranchRef?.name ?? "";
   debug.defaultBranchRef = defaultBranchRef;
 
-  const localAndRemoteHeadsTask = tasks.localAndRemoteHeads(
-    repoTopLevel,
-    defaultBranchRef,
-    "origin",
-  );
+  const listRefsTask = tasks.listRefs(repoTopLevel);
 
   const workingTreeStatus = await workingTreeStatusTask.evaluate();
   debug.workingTreeStatus = workingTreeStatus;
@@ -108,14 +107,25 @@ export const updateLocal = async (
     gitStatusPorcelain.filter((st) => st.working !== "?" || st.index !== "?")
       .length === 0;
 
-  const localAndRemoteHeads = await localAndRemoteHeadsTask.evaluate();
-  if (didFail(localAndRemoteHeads))
-    return { inputs, debug, result: localAndRemoteHeads };
+  const localRefs = await listRefsTask.evaluate();
+  if (didFail(localRefs)) return { inputs, debug, result: localRefs };
 
-  const { localHash, remoteHash } = localAndRemoteHeads.value;
+  // FIXME: hard-wired remote name
+  const localHash = localRefs.value.get(
+    `refs/heads/${defaultBranchRef}`,
+  )?.objectId;
+  const remoteHash = localRefs.value.get(
+    `refs/remotes/origin/${defaultBranchRef}`,
+  )?.objectId;
 
-  if (!localHash || !remoteHash) {
-    // Awaiting first push; awaiting first pull (weird); empty on both sides.
+  if (!localHash && !remoteHash) {
+    result.defaultBranchState = "both-empty";
+    return { inputs, debug, result: succeeded(result) };
+  } else if (!remoteHash) {
+    result.defaultBranchState = "awaiting-first-push";
+    return { inputs, debug, result: succeeded(result) };
+  } else if (!localHash) {
+    result.defaultBranchState = "awaiting-first-pull";
     return { inputs, debug, result: succeeded(result) };
   }
 
