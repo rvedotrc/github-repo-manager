@@ -96,6 +96,14 @@ const main = async () => {
         input === null ? output[1] : input ? output[0] : output[2];
 
       const flags = [
+        sync.inputs.repo.isArchived ? "a" : " ",
+        (
+          {
+            INTERNAL: "i",
+            PRIVATE: "l",
+            PUBLIC: " ",
+          } as const
+        )[sync.inputs.repo.visibility],
         pick(["f", "~", " "], props.fetched?.fetched ?? null),
         pick([" ", "~", "B"], props.onDefaultBranch),
         pick([" ", "~", "P"], props.nothingInProgress),
