@@ -1,3 +1,4 @@
+import { inspect } from "node:util";
 import { GitHubGraphClient } from "./gitHubGraphClient.js";
 import {
   syncAllUnderOwnerToDir,
@@ -47,24 +48,25 @@ const main = async () => {
       `Sync results for ${syncResult.owner} into ${syncResult.ownerDir}:`,
     );
 
+    const messages: string[] = [];
+    const table: string[][] = [];
+
     for (const warning of [
       ...syncResult.matchData.warnings.ambiguousLocalWarnings,
       ...syncResult.matchData.warnings.nameMismatchWarnings,
       ...syncResult.matchData.warnings.somethingInTheWayPreventingClone,
     ]) {
-      console.log(`Blocker: ${warning.message}`);
+      messages.push(`Blocker: ${warning.message}`);
     }
 
     for (const clone of syncResult.clones) {
       if (clone.status.tag === "succeeded") {
-        console.log(
-          `INFO: Clone ${clone.repo.owner.login}/${clone.repo.name} => ${clone.ownerDir}/`,
-          clone.status.value,
+        messages.push(
+          `INFO: Clone ${clone.repo.owner.login}/${clone.repo.name} => ${clone.ownerDir}/ ${inspect(clone.status.value)}`,
         );
       } else {
-        console.log(
-          `ERROR: Clone ${clone.repo.owner.login}/${clone.repo.name} => ${clone.ownerDir}/ :`,
-          clone.status.reason,
+        messages.push(
+          `ERROR: Clone ${clone.repo.owner.login}/${clone.repo.name} => ${clone.ownerDir}/ : ${inspect(clone.status.reason)}`,
         );
       }
     }
@@ -73,9 +75,8 @@ const main = async () => {
       // console.log(JSON.stringify({ sync }));
 
       if (sync.result.tag === "failed") {
-        console.log(
-          `ERROR: Sync ${sync.inputs?.repo.owner.login}/${sync.inputs?.repo.name} => ${sync.inputs?.repoTopLevel}/ :`,
-          sync.result.reason,
+        messages.push(
+          `ERROR: Sync ${sync.inputs?.repo.owner.login}/${sync.inputs?.repo.name} => ${sync.inputs?.repoTopLevel}/ : ${inspect(sync.result.reason)}`,
         );
         continue;
       }
@@ -84,9 +85,8 @@ const main = async () => {
       const result = updateLocalResult.result;
 
       if (result.tag === "failed") {
-        console.log(
-          `ERROR: Sync ${sync.inputs.repo.owner.login}/${sync.inputs.repo.name} => ${sync.inputs.repoTopLevel}/ :`,
-          JSON.stringify(result.reason),
+        messages.push(
+          `ERROR: Sync ${sync.inputs.repo.owner.login}/${sync.inputs.repo.name} => ${sync.inputs.repoTopLevel}/ : ${inspect(result.reason)}`,
         );
         continue;
       }
@@ -95,15 +95,31 @@ const main = async () => {
       const pick = (output: [string, string, string], input: boolean | null) =>
         input === null ? output[1] : input ? output[0] : output[2];
 
-      const flags = [
-        sync.inputs.repo.isArchived ? "a" : " ",
-        (
-          {
-            INTERNAL: "i",
-            PRIVATE: "l",
-            PUBLIC: " ",
-          } as const
-        )[sync.inputs.repo.visibility],
+      // const githubFlags = [
+      //   sync.inputs.repo.isArchived ? "a" : " ",
+      //   sync.inputs.repo.isEmpty ? "e" : " ",
+      //   sync.inputs.repo.isFork ? "f" : " ",
+      //   sync.inputs.repo.isLocked ? "l" : " ",
+      //   sync.inputs.repo.isMirror ? "m" : " ",
+      //   sync.inputs.repo.isPrivate ? "p" : " ",
+      //   sync.inputs.repo.isTemplate ? "t" : " ",
+      //   sync.inputs.repo.visibility.padEnd(10),
+      // ];
+
+      const githubFlagsFull = [
+        sync.inputs.repo.isPrivate && "private",
+        sync.inputs.repo.isLocked && "locked",
+        sync.inputs.repo.isEmpty && "empty",
+        sync.inputs.repo.isFork && "fork",
+        sync.inputs.repo.isMirror && "mirror",
+        sync.inputs.repo.isTemplate && "template",
+        sync.inputs.repo.isArchived && "archive",
+      ]
+        .filter((s) => typeof s === "string")
+        .join(" ")
+        .padEnd(20);
+
+      const analysis = [
         pick(["f", "~", " "], props.fetched?.fetched ?? null),
         pick([" ", "~", "B"], props.onDefaultBranch),
         pick([" ", "~", "P"], props.nothingInProgress),
@@ -118,16 +134,34 @@ const main = async () => {
         pick(["u", "~", " "], props.fastForwardMerged),
       ];
 
-      console.log(
-        [
-          flags.join(" "),
-          (props.defaultBranchState ?? "~").padEnd(14),
-          `${sync.inputs.repo.owner.login}/${sync.inputs.repo.name}`,
-        ].join("\t"),
-      );
+      table.push([
+        // githubFlags.join(" "),
+        githubFlagsFull,
+        "|",
+        analysis.join(" "),
+        "|",
+        props.defaultBranchState ?? "~",
+        "|",
+        `${sync.inputs.repo.owner.login}/${sync.inputs.repo.name}`,
+      ]);
 
       // console.dir(updateLocalResult, { depth: 5 });
     }
+
+    const maxWidths: number[] = [];
+    for (const row of table) {
+      row.forEach((cell, i) => {
+        const l = cell.length;
+        if (maxWidths[i] === undefined || maxWidths[i] < l) maxWidths[i] = l;
+      });
+    }
+
+    for (const row of table) {
+      const padded = row.map((value, i) => value.padEnd(maxWidths[i]));
+      console.log(padded.join(" ").trimEnd());
+    }
+
+    for (const message of messages) console.log(message);
   }
 
   // console.log(JSON.stringify(finalResult, null, 2));
