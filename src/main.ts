@@ -156,6 +156,8 @@ const main = async () => {
       });
     }
 
+    table.sort((a, b) => a[a.length - 1].localeCompare(b[b.length - 1]));
+
     for (const row of table) {
       const padded = row.map((value, i) => value.padEnd(maxWidths[i]));
       console.log(padded.join(" ").trimEnd());
