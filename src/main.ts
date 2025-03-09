@@ -6,9 +6,14 @@ import {
 } from "./index.js";
 import { freshenReferenceData, type ReferenceData } from "./referenceData.js";
 import { buildReport, aggregateReports, showReport } from "./report.js";
+import { settingsApp } from "./settingsApp/index.js";
 
 const main = async () => {
   const args = process.argv.slice(2);
+
+  if (args[0] === "--settings") {
+    return await settingsApp(args.slice(1));
+  }
 
   const r0 = {
     args,
@@ -47,7 +52,54 @@ const main = async () => {
   const aggregatedReport = aggregateReports(reports);
   showReport(aggregatedReport);
 
-  // console.log(JSON.stringify(finalResult, null, 2));
+    const notAGitRepo = unmatchedLocals.filter((t) => !t.isGit);
+    if (notAGitRepo.length > 0) {
+      console.log();
+      console.log(`Found the following, but they are not git repositories:`);
+      console.log(
+        "\t" +
+          notAGitRepo
+            .map((t) => t.childPath)
+            .toSorted()
+            .join("\n\t"),
+      );
+    }
+
+    const pairedToNonExistentRemote = unmatchedLocals.filter(
+      (t) => t.isGit && t.metadata.url,
+    );
+    if (pairedToNonExistentRemote.length > 0) {
+      console.log();
+      console.log(
+        `Found the following, but the repositories they are apparently paired with don't exist. Maybe edit their .git/config?`,
+      );
+      console.log(
+        "\t" +
+          pairedToNonExistentRemote
+            .map(
+              (t) =>
+                `${t.childPath} (supposed url: ${t.isGit && t.metadata.url})`,
+            )
+            .toSorted()
+            .join("\n\t"),
+      );
+    }
+
+    const notPaired = unmatchedLocals.filter((t) => t.isGit && !t.metadata.url);
+    if (notPaired.length > 0) {
+      console.log();
+      console.log(
+        `Found the following, but not paired to any repo. Maybe they're waiting for their first push?`,
+      );
+      console.log(
+        "\t" +
+          notPaired
+            .map((t) => t.childPath)
+            .toSorted()
+            .join("\n\t"),
+      );
+    }
+  }
 };
 
 main().catch((err) => {
