@@ -5,7 +5,12 @@ import {
   type OwnerLogin,
 } from "./index.js";
 import { freshenReferenceData, type ReferenceData } from "./referenceData.js";
-import { buildReport, aggregateReports, showReport } from "./report.js";
+import {
+  buildReport,
+  aggregateReports,
+  showReport,
+  explainReport,
+} from "./report.js";
 
 const main = async () => {
   const args = process.argv.slice(2);
@@ -46,8 +51,7 @@ const main = async () => {
   const reports = finalResult.syncResults.map(buildReport);
   const aggregatedReport = aggregateReports(reports);
   showReport(aggregatedReport);
-
-  // console.log(JSON.stringify(finalResult, null, 2));
+  explainReport();
 };
 
 main().catch((err) => {

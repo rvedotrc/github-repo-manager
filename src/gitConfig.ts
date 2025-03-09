@@ -1,3 +1,4 @@
+import { stat } from "node:fs/promises";
 import { TopLevelDir } from "./index.js";
 import { makePromiseLimiter } from "./promiseLimiter.js";
 import { runAndCapture } from "./runAndCapture.js";
@@ -10,13 +11,30 @@ export const readGitConfig = async (
   repoTopLevel: TopLevelDir,
 ): Promise<GitConfig> => {
   const configText = (
-    await configLimiter.submit(
-      () =>
-        runAndCapture("git", ["config", "--list", "--local"], {
-          cwd: repoTopLevel,
-        }),
-      `list-${repoTopLevel}`,
-    )
+    await configLimiter
+      .submit(
+        () =>
+          runAndCapture("git", ["config", "--list", "--local"], {
+            cwd: repoTopLevel,
+          }),
+        `list-${repoTopLevel}`,
+      )
+      .catch((err) =>
+        stat(`${repoTopLevel}/.git/config`).then(
+          () => {
+            throw err;
+          },
+          (statErr) => {
+            if (
+              statErr instanceof Error &&
+              "code" in statErr &&
+              statErr.code === "ENOENT"
+            )
+              return { stdout: "" };
+            throw err;
+          },
+        ),
+      )
   ).stdout;
 
   const pairs = [...configText.matchAll(/^(.*?)=(.*)\n/gm)].map((match) => ({

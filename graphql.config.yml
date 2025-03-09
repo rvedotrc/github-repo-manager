@@ -1,0 +1,3 @@
+---
+schema: ./vendor/github/schema.docs.graphql
+documents: ./src/**/*.graphql

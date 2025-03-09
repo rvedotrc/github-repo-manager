@@ -53,6 +53,7 @@ export const updateLocal = async (
     nothingInProgress: null,
     defaultBranchState: null,
     fastForwardMerged: false,
+    // FIXME: "detached HEAD" handling, i.e. .git/HEAD contains a sha, not a ref
   };
 
   const inputs = {

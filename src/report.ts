@@ -18,11 +18,11 @@ export const buildReport = (
   for (const clone of syncResult.clones) {
     if (clone.status.tag === "succeeded") {
       messages.push(
-        `INFO: Clone ${clone.repo.owner.login}/${clone.repo.name} => ${clone.ownerDir}/ ${inspect(clone.status.value)}`,
+        `INFO: Cloned ${clone.repo.owner.login}/${clone.repo.name} => ${clone.ownerDir}/${clone.repo.name}`,
       );
     } else {
       messages.push(
-        `ERROR: Clone ${clone.repo.owner.login}/${clone.repo.name} => ${clone.ownerDir}/ : ${inspect(clone.status.reason)}`,
+        `ERROR: Clone ${clone.repo.owner.login}/${clone.repo.name} => ${clone.ownerDir}/${clone.repo.name} failed: ${inspect(clone.status.reason)}`,
       );
     }
   }
@@ -108,6 +108,25 @@ export const buildReport = (
     table,
     messages,
   };
+};
+
+export const explainReport = () => {
+  console.log(
+    [
+      "",
+      "Legend:",
+      "",
+      "  f = fetched",
+      "  u = fast-forward merged",
+      "",
+      "  B = not on default branch",
+      "  P = merge, rebase etc in progress",
+      "  M = something is modified",
+      "  ? = something is untracked (only shown if not 'M')",
+      "",
+      "  ~ = error",
+    ].join("\n"),
+  );
 };
 
 export const showReport = (report: ReturnType<typeof buildReport>) => {

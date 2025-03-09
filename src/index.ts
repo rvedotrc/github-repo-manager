@@ -119,21 +119,5 @@ export const syncAllUnderOwnerToDir = async (
     syncs: await syncs,
   };
 
-  // for (const local of matchData.results.unmatchedLocals) {
-  //   if (!local.isGit) {
-  //     console.warn(
-  //       `Unexpected item found; consider removing: rm -rf ${local.childPath}`,
-  //     );
-  //   } else if (local.metadata.url) {
-  //     console.warn(
-  //       `Found git repository '${local.childPath}', marked as a clone of ${local.metadata.url}, but that remote doesn't exist. Perhaps it got deleted? Consider removing: rm -rf ${local.childPath}`,
-  //     );
-  //   } else {
-  //     console.warn(
-  //       `Found git repository '${local.childPath}', but with no matching remote. Maybe it's still waiting for its first push?`,
-  //     );
-  //   }
-  // }
-
   return r1;
 };
