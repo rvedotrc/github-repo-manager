@@ -19,6 +19,7 @@ export type UpdateLocalSuccessResult = {
   onDefaultBranch: boolean | null;
   gitStatusIsClean: boolean | null;
   gitStatusExcludingUntrackedIsClean: boolean | null;
+  gitStatusNothingUntracked: boolean | null;
   nothingInProgress: boolean | null;
   defaultBranchState:
     | "both-empty"
@@ -50,6 +51,7 @@ export const updateLocal = async (
     onDefaultBranch: null,
     gitStatusIsClean: null,
     gitStatusExcludingUntrackedIsClean: null,
+    gitStatusNothingUntracked: null,
     nothingInProgress: null,
     defaultBranchState: null,
     fastForwardMerged: false,
@@ -105,6 +107,9 @@ export const updateLocal = async (
   result.gitStatusIsClean = gitStatusIsClean;
   result.gitStatusExcludingUntrackedIsClean =
     gitStatusPorcelain.filter((st) => st.working !== "?" || st.index !== "?")
+      .length === 0;
+  result.gitStatusNothingUntracked =
+    gitStatusPorcelain.filter((st) => st.working === "?" && st.index === "?")
       .length === 0;
 
   const localRefs = await listRefsTask.evaluate();

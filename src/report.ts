@@ -77,17 +77,11 @@ export const buildReport = (
 
     const analysis = [
       pick(["f", "~", " "], props.fetched?.fetched ?? null),
+      pick(["u", "~", " "], props.fastForwardMerged),
       pick([" ", "~", "B"], props.onDefaultBranch),
       pick([" ", "~", "P"], props.nothingInProgress),
-      pick(
-        [
-          " ",
-          "~",
-          pick(["?", "~", "M"], props.gitStatusExcludingUntrackedIsClean),
-        ],
-        props.gitStatusIsClean,
-      ),
-      pick(["u", "~", " "], props.fastForwardMerged),
+      pick([" ", "~", "M"], props.gitStatusExcludingUntrackedIsClean),
+      pick([" ", "~", "U"], props.gitStatusNothingUntracked),
     ];
 
     table.push([
@@ -127,6 +121,16 @@ export const showReport = (report: ReturnType<typeof buildReport>) => {
     const padded = row.map((value, i) => value.padEnd(maxWidths[i]));
     console.log(padded.join(" ").trimEnd());
   }
+
+  console.log(`
+Legend:
+    f = was fetched
+    u = was fast-forwarded
+    B = on a non-default branch
+    P = merge, rebase, etc in progress
+    M = non-clean git status (excluding untracked)
+    U = something is untracked
+`);
 
   for (const message of messages) console.log(message);
 };
