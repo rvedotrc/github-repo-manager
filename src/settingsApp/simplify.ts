@@ -22,8 +22,8 @@ export const simplify = (data: ReferenceData) => {
     ...data,
     repositories: data.repositories
       .map((repo) => ({
-        id: repo.id,
         name: repo.name,
+        id: repo.id,
         visibility: repo.visibility,
         archive: repo.isArchived,
         topicNames: simplifyTopics(

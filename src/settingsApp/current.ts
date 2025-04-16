@@ -57,7 +57,7 @@ const fetchReferenceData = async (
 };
 
 const referenceFile = (owner: OwnerLogin) =>
-  `var/repositories.${owner}.settings.json`;
+  `var/repositories.${owner}.settings.current.json`;
 
 export const freshenReferenceData = async (
   owner: OwnerLogin,
@@ -71,7 +71,7 @@ export const freshenReferenceData = async (
   const finalFile = referenceFile(owner);
   const tmpFile = finalFile + ".tmp";
 
-  const content = JSON.stringify(referenceData) + "\n";
+  const content = JSON.stringify(referenceData, null, 2) + "\n";
   await fs.promises.writeFile(tmpFile, content, { encoding: "utf-8" });
   await fs.promises.rename(tmpFile, finalFile);
   console.debug(`Saved to ${finalFile}`);
