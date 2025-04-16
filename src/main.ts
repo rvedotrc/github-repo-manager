@@ -6,9 +6,14 @@ import {
 } from "./index.js";
 import { freshenReferenceData, type ReferenceData } from "./referenceData.js";
 import { buildReport, aggregateReports, showReport } from "./report.js";
+import { settingsApp } from "./settingsApp/index.js";
 
 const main = async () => {
   const args = process.argv.slice(2);
+
+  if (args[0] === "--settings") {
+    return await settingsApp(args.slice(1));
+  }
 
   const r0 = {
     args,
@@ -46,8 +51,6 @@ const main = async () => {
   const reports = finalResult.syncResults.map(buildReport);
   const aggregatedReport = aggregateReports(reports);
   showReport(aggregatedReport);
-
-  // console.log(JSON.stringify(finalResult, null, 2));
 };
 
 main().catch((err) => {
