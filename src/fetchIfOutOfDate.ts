@@ -1,6 +1,6 @@
-import { type GitConfig, ensureConfig } from "./gitConfig.js";
+import { ensureConfig, type GitConfig } from "./gitConfig.js";
 import type { TopLevelDir } from "./index.js";
-import { succeeded, failed } from "./logPromiseError.js";
+import { failed, succeeded } from "./logPromiseError.js";
 import type { PromiseLimiter } from "./promiseLimiter.js";
 import type { Repository } from "./referenceData.js";
 import { runAndCapture } from "./runAndCapture.js";

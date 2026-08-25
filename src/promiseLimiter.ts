@@ -70,7 +70,9 @@ export const makePromiseLimiter = <T>(
   ): Promise<T2> => {
     const id = nextId++;
     logger?.debug(`${name} submit job #${id} ${tagToString(tag)}`);
-    return new Promise((resolve, reject) => {
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return new Promise<any>((resolve, reject) => {
       queue.push({ id, makePromise, resolve, reject, tag });
       tryStart();
     });

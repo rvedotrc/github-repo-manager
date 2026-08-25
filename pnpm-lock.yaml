@@ -20,6 +20,9 @@ importers:
       "@0no-co/graphqlsp":
         specifier: ^1.17.5
         version: 1.17.5(graphql@16.14.2)(typescript@5.9.3)
+      "@blaahaj/std":
+        specifier: ^1.0.3
+        version: 1.0.3(@typescript-eslint/eslint-plugin@7.18.0(@typescript-eslint/parser@7.18.0(eslint@9.39.5(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3))(eslint@9.39.5(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3))(eslint@9.39.5(jiti@2.7.0)(supports-color@7.2.0))
       "@eslint/js":
         specifier: ^9.39.5
         version: 9.39.5
@@ -240,6 +243,13 @@ packages:
       {
         integrity: sha512-A3oSXxeeGi/y2/c/5qNISYexM3Yq6pmIN80gYYPEIgm0pioBhixD20umF9mVOJwVQ3wPjAGgqM6NvUfSXQ1qmg==,
       }
+
+  "@blaahaj/std@1.0.3":
+    resolution:
+      {
+        integrity: sha512-YOyVj+eLuPGsY19oDgjkilaTRTH0A6v2PQa7y63GgrQQn1a2wsCv6ignSLEjl4TkJmKgQvzoBFrlRbq1RyaRyw==,
+      }
+    hasBin: true
 
   "@envelop/core@5.6.0":
     resolution:
@@ -1789,6 +1799,26 @@ packages:
       }
     peerDependencies:
       eslint: ">=5.0.0"
+
+  eslint-plugin-simple-import-sort@13.0.0:
+    resolution:
+      {
+        integrity: sha512-McAc+/Nlvcg4byY/CABGH8kqnefWBj8s3JA2okEtz8ixbECQgU46p0HkTUKa4YS7wvgGceimlc34p1nXqbWqtA==,
+      }
+    peerDependencies:
+      eslint: ">=5.0.0"
+
+  eslint-plugin-unused-imports@4.4.1:
+    resolution:
+      {
+        integrity: sha512-oZGYUz1X3sRMGUB+0cZyK2VcvRX5lm/vB56PgNNcU+7ficUCKm66oZWKUubXWnOuPjQ8PvmXtCViXBMONPe7tQ==,
+      }
+    peerDependencies:
+      "@typescript-eslint/eslint-plugin": ^8.0.0-0 || ^7.0.0 || ^6.0.0 || ^5.0.0
+      eslint: ^10.0.0 || ^9.0.0 || ^8.0.0
+    peerDependenciesMeta:
+      "@typescript-eslint/eslint-plugin":
+        optional: true
 
   eslint-scope@8.4.0:
     resolution:
@@ -3806,6 +3836,14 @@ snapshots:
 
   "@blaahaj/lazy-task@1.0.1": {}
 
+  "@blaahaj/std@1.0.3(@typescript-eslint/eslint-plugin@7.18.0(@typescript-eslint/parser@7.18.0(eslint@9.39.5(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3))(eslint@9.39.5(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3))(eslint@9.39.5(jiti@2.7.0)(supports-color@7.2.0))":
+    dependencies:
+      eslint-plugin-simple-import-sort: 13.0.0(eslint@9.39.5(jiti@2.7.0)(supports-color@7.2.0))
+      eslint-plugin-unused-imports: 4.4.1(@typescript-eslint/eslint-plugin@7.18.0(@typescript-eslint/parser@7.18.0(eslint@9.39.5(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3))(eslint@9.39.5(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3))(eslint@9.39.5(jiti@2.7.0)(supports-color@7.2.0))
+    transitivePeerDependencies:
+      - "@typescript-eslint/eslint-plugin"
+      - eslint
+
   "@envelop/core@5.6.0":
     dependencies:
       "@envelop/instrumentation": 1.0.0
@@ -5018,6 +5056,16 @@ snapshots:
   eslint-plugin-simple-import-sort@10.0.0(eslint@9.39.5(jiti@2.7.0)(supports-color@7.2.0)):
     dependencies:
       eslint: 9.39.5(jiti@2.7.0)(supports-color@7.2.0)
+
+  eslint-plugin-simple-import-sort@13.0.0(eslint@9.39.5(jiti@2.7.0)(supports-color@7.2.0)):
+    dependencies:
+      eslint: 9.39.5(jiti@2.7.0)(supports-color@7.2.0)
+
+  eslint-plugin-unused-imports@4.4.1(@typescript-eslint/eslint-plugin@7.18.0(@typescript-eslint/parser@7.18.0(eslint@9.39.5(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3))(eslint@9.39.5(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3))(eslint@9.39.5(jiti@2.7.0)(supports-color@7.2.0)):
+    dependencies:
+      eslint: 9.39.5(jiti@2.7.0)(supports-color@7.2.0)
+    optionalDependencies:
+      "@typescript-eslint/eslint-plugin": 7.18.0(@typescript-eslint/parser@7.18.0(eslint@9.39.5(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3))(eslint@9.39.5(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3)
 
   eslint-scope@8.4.0:
     dependencies:

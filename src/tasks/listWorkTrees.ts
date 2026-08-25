@@ -1,7 +1,8 @@
 import { LazyTask } from "@blaahaj/lazy-task";
+
 import type { TopLevelDir } from "../index.js";
-import { runAndCapture } from "../runAndCapture.js";
 import { failed, type SF } from "../logPromiseError.js";
+import { runAndCapture } from "../runAndCapture.js";
 
 export type WorkTree = {
   worktree: string;

@@ -1,7 +1,8 @@
 import { LazyTask } from "@blaahaj/lazy-task";
-import { runAndCapture } from "../runAndCapture.js";
+
 import type { TopLevelDir } from "../index.js";
-import { failed, succeeded, type SF } from "../logPromiseError.js";
+import { failed, type SF, succeeded } from "../logPromiseError.js";
+import { runAndCapture } from "../runAndCapture.js";
 
 export const currentBranchName = (repoTopLevel: TopLevelDir) =>
   LazyTask.fromTask(async (): Promise<SF<string, unknown>> => {

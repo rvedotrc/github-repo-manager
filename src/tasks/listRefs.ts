@@ -1,7 +1,8 @@
 import { LazyTask } from "@blaahaj/lazy-task";
+
 import type { TopLevelDir } from "../index.js";
-import { runAndCapture } from "../runAndCapture.js";
 import { failed, succeeded } from "../logPromiseError.js";
+import { runAndCapture } from "../runAndCapture.js";
 
 export const listRefs = (repoTopLevel: TopLevelDir) =>
   LazyTask.fromTask(async () => {

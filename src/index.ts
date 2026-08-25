@@ -1,21 +1,21 @@
 import * as fs from "fs";
+import { rm } from "fs/promises";
 
+import type { GitConfig } from "./gitConfig.js";
 import { loadLocalRepositories } from "./locals.js";
-import { matchLocalsToRemotes } from "./matcher.js";
-import { setMetadata } from "./metadata.js";
-import { makePromiseLimiter } from "./promiseLimiter.js";
-import { loadReferenceData, type Repository } from "./referenceData.js";
 // import { updateLocal } from "./updateLocal.js";
 import {
   failed,
   NONE,
-  succeeded,
   type SFWithContext,
+  succeeded,
 } from "./logPromiseError.js";
+import { matchLocalsToRemotes } from "./matcher.js";
+import { setMetadata } from "./metadata.js";
+import { makePromiseLimiter } from "./promiseLimiter.js";
+import { loadReferenceData, type Repository } from "./referenceData.js";
 import { runAndCapture } from "./runAndCapture.js";
-import { rm } from "fs/promises";
 import { updateLocal, type UpdateLocalResult } from "./updateLocal.js";
-import type { GitConfig } from "./gitConfig.js";
 
 export type OwnerLogin = string & { readonly tag: unique symbol };
 export type OwnerDir = string & { readonly tag: unique symbol };

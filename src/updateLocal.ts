@@ -1,18 +1,18 @@
+import { somethingInProgress } from "@blaahaj/got-to-git";
+
+import { fetchIfOutOfDate } from "./fetchIfOutOfDate.js";
 import { type GitConfig } from "./gitConfig.js";
 import { TopLevelDir } from "./index.js";
 import {
   didFail,
   failed,
-  succeeded,
   type SFWithContext,
+  succeeded,
 } from "./logPromiseError.js";
 import { PromiseLimiter } from "./promiseLimiter.js";
 import { Repository } from "./referenceData.js";
 import { runAndCapture } from "./runAndCapture.js";
-
-import { somethingInProgress } from "@blaahaj/got-to-git";
 import { tasks } from "./tasks/index.js";
-import { fetchIfOutOfDate } from "./fetchIfOutOfDate.js";
 
 export type UpdateLocalSuccessResult = {
   fetched: { fetched: boolean; reason?: string } | null;

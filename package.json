@@ -1,13 +1,12 @@
 {
   "name": "github-repo-manager",
   "version": "1.0.0",
-  "private": true,
   "description": "",
-  "repository": "https://github.com/rvedotrc/github-repo-manager",
   "license": "MIT",
   "author": "Rachel Evans <rachel@rachelevans.org>",
-  "type": "module",
   "main": "dist/index.js",
+  "repository": "https://github.com/rvedotrc/github-repo-manager",
+  "type": "module",
   "scripts": {
     "build": "set -ve ; pnpm run lint ; tsc",
     "build:watch": "rebuild --exclude=dist --exclude=node_modules . -- sh -c 'sleep 1 && pnpm run build'",
@@ -15,7 +14,7 @@
     "codegen": "graphql-codegen --config codegen.ts",
     "codegen:watch": "rebuild src vendor codegen.ts -- pnpm run codegen",
     "lint": "set -ve ; pnpm run lint:packagejson ; prettier --write . ; eslint",
-    "lint:packagejson": ": npx npm-package-json-lint -c npmpackagejsonlint.config.json .",
+    "lint:packagejson": "npx npm-package-json-lint -c npmpackagejsonlint.config.json .",
     "test": "echo 'Sorry :-('"
   },
   "dependencies": {
@@ -25,6 +24,7 @@
   },
   "devDependencies": {
     "@0no-co/graphqlsp": "^1.17.5",
+    "@blaahaj/std": "^1.0.3",
     "@eslint/js": "^9.39.5",
     "@graphql-codegen/cli": "^5.0.7",
     "@graphql-codegen/schema-ast": "^4.1.0",
@@ -41,5 +41,6 @@
     "prettier-plugin-packagejson": "^2.5.22",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.67.0"
-  }
+  },
+  "private": true
 }

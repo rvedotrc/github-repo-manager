@@ -1,4 +1,5 @@
 import { inspect } from "node:util";
+
 import type { syncAllUnderOwnerToDir } from "./index.js";
 
 export const buildReport = (

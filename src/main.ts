@@ -1,15 +1,15 @@
 import { GitHubGraphClient } from "./gitHubGraphClient.js";
 import {
-  syncAllUnderOwnerToDir,
   type OwnerDir,
   type OwnerLogin,
+  syncAllUnderOwnerToDir,
 } from "./index.js";
 import { freshenReferenceData, type ReferenceData } from "./referenceData.js";
 import {
-  buildReport,
   aggregateReports,
-  showReport,
+  buildReport,
   explainReport,
+  showReport,
 } from "./report.js";
 
 const main = async () => {

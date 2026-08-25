@@ -1,7 +1,8 @@
 import { LazyTask } from "@blaahaj/lazy-task";
+
 import type { TopLevelDir } from "../index.js";
+import { failed, type SF, succeeded } from "../logPromiseError.js";
 import { runAndCapture } from "../runAndCapture.js";
-import { failed, succeeded, type SF } from "../logPromiseError.js";
 
 export const isAncestor = (
   repoTopLevel: TopLevelDir,
