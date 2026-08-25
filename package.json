@@ -19,27 +19,27 @@
     "test": "echo 'Sorry :-('"
   },
   "dependencies": {
-    "@blaahaj/got-to-git": "../../blaahaj/got-to-git",
+    "@blaahaj/got-to-git": "link:../../blaahaj/got-to-git",
     "@blaahaj/lazy-task": "^1.0.1",
-    "graphql": "^16.9.0"
+    "graphql": "^16.14.2"
   },
   "devDependencies": {
-    "@0no-co/graphqlsp": "^1.12.12",
-    "@eslint/js": "^9.8.0",
-    "@graphql-codegen/cli": "^5.0.2",
+    "@0no-co/graphqlsp": "^1.17.5",
+    "@eslint/js": "^9.39.5",
+    "@graphql-codegen/cli": "^5.0.7",
     "@graphql-codegen/schema-ast": "^4.1.0",
-    "@parcel/watcher": "^2.4.1",
-    "@types/node": "^20.5.9",
-    "@typescript-eslint/eslint-plugin": "^7.12.0",
-    "@typescript-eslint/parser": "^7.12.0",
-    "eslint": "9.x",
+    "@parcel/watcher": "^2.6.0",
+    "@types/node": "^20.19.43",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "eslint": "~9.39.5",
     "eslint-plugin-simple-import-sort": "^10.0.0",
-    "globals": "^15.9.0",
+    "globals": "^15.15.0",
     "npm-package-json-lint": "^8.0.0",
     "npm-package-json-lint-config-default": "^7.0.1",
-    "prettier": "^3.0.3",
-    "prettier-plugin-packagejson": "^2.5.1",
-    "typescript": "^5.2.2",
-    "typescript-eslint": "^8.0.0"
+    "prettier": "^3.9.6",
+    "prettier-plugin-packagejson": "^2.5.22",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.67.0"
   }
 }

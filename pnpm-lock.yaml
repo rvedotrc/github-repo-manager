@@ -8,47 +8,47 @@ importers:
   .:
     dependencies:
       "@blaahaj/got-to-git":
-        specifier: ../../blaahaj/got-to-git
+        specifier: link:../../blaahaj/got-to-git
         version: link:../../blaahaj/got-to-git
       "@blaahaj/lazy-task":
         specifier: ^1.0.1
         version: 1.0.1
       graphql:
-        specifier: ^16.9.0
+        specifier: ^16.14.2
         version: 16.14.2
     devDependencies:
       "@0no-co/graphqlsp":
-        specifier: ^1.12.12
+        specifier: ^1.17.5
         version: 1.17.5(graphql@16.14.2)(typescript@5.9.3)
       "@eslint/js":
-        specifier: ^9.8.0
+        specifier: ^9.39.5
         version: 9.39.5
       "@graphql-codegen/cli":
-        specifier: ^5.0.2
+        specifier: ^5.0.7
         version: 5.0.7(@parcel/watcher@2.6.0)(@types/node@20.19.43)(graphql@16.14.2)(supports-color@7.2.0)(typescript@5.9.3)
       "@graphql-codegen/schema-ast":
         specifier: ^4.1.0
         version: 4.1.0(graphql@16.14.2)
       "@parcel/watcher":
-        specifier: ^2.4.1
+        specifier: ^2.6.0
         version: 2.6.0
       "@types/node":
-        specifier: ^20.5.9
+        specifier: ^20.19.43
         version: 20.19.43
       "@typescript-eslint/eslint-plugin":
-        specifier: ^7.12.0
+        specifier: ^7.18.0
         version: 7.18.0(@typescript-eslint/parser@7.18.0(eslint@9.39.5(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3))(eslint@9.39.5(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3)
       "@typescript-eslint/parser":
-        specifier: ^7.12.0
+        specifier: ^7.18.0
         version: 7.18.0(eslint@9.39.5(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3)
       eslint:
-        specifier: 9.x
+        specifier: ~9.39.5
         version: 9.39.5(jiti@2.7.0)(supports-color@7.2.0)
       eslint-plugin-simple-import-sort:
         specifier: ^10.0.0
         version: 10.0.0(eslint@9.39.5(jiti@2.7.0)(supports-color@7.2.0))
       globals:
-        specifier: ^15.9.0
+        specifier: ^15.15.0
         version: 15.15.0
       npm-package-json-lint:
         specifier: ^8.0.0
@@ -57,16 +57,16 @@ importers:
         specifier: ^7.0.1
         version: 7.0.1(npm-package-json-lint@8.0.0(supports-color@7.2.0)(typescript@5.9.3))
       prettier:
-        specifier: ^3.0.3
+        specifier: ^3.9.6
         version: 3.9.6
       prettier-plugin-packagejson:
-        specifier: ^2.5.1
+        specifier: ^2.5.22
         version: 2.5.22(prettier@3.9.6)
       typescript:
-        specifier: ^5.2.2
+        specifier: ^5.9.3
         version: 5.9.3
       typescript-eslint:
-        specifier: ^8.0.0
+        specifier: ^8.67.0
         version: 8.67.0(eslint@9.39.5(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3)
 
 packages:
