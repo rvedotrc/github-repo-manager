@@ -1,6 +1,5 @@
 export type Optional<T> =
-  | { readonly present: true; readonly value: T }
-  | { readonly present: false };
+  { readonly present: true; readonly value: T } | { readonly present: false };
 
 export const makePresent = <T>(value: T): Optional<T> => ({
   present: true,

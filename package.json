@@ -9,12 +9,12 @@
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
-    "build": "set -ve ; yarn run lint ; tsc",
-    "build:watch": "rebuild --exclude=dist --exclude=node_modules . -- sh -c 'sleep 1 && yarn run build'",
+    "build": "set -ve ; pnpm run lint ; tsc",
+    "build:watch": "rebuild --exclude=dist --exclude=node_modules . -- sh -c 'sleep 1 && pnpm run build'",
     "clean": "rm -rf node_modules */tsconfig.tsbuildinfo */dist */node_modules",
     "codegen": "graphql-codegen --config codegen.ts",
-    "codegen:watch": "rebuild src vendor codegen.ts -- yarn run codegen",
-    "lint": "set -ve ; yarn run lint:packagejson ; prettier --write . ; eslint",
+    "codegen:watch": "rebuild src vendor codegen.ts -- pnpm run codegen",
+    "lint": "set -ve ; pnpm run lint:packagejson ; prettier --write . ; eslint",
     "lint:packagejson": ": npx npm-package-json-lint -c npmpackagejsonlint.config.json .",
     "test": "echo 'Sorry :-('"
   },
