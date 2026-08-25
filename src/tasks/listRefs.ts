@@ -15,7 +15,10 @@ export const listRefs = (repoTopLevel: TopLevelDir) =>
 
     const lines = r.stdout.trimEnd().split("\n");
 
-    const out = new Map<string, { objectId; objectType }>();
+    const out = new Map<
+      string,
+      { readonly objectId: string; readonly objectType: string }
+    >();
 
     for (const line of lines) {
       const [objectIdAndType, ref] = line.split("\t");
